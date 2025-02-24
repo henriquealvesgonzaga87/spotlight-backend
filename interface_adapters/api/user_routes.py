@@ -9,6 +9,11 @@ from domain.entities.user import User
 router = APIRouter()
 
 
+@router.get("/", status_code=status.HTTP_200_OK)
+def read_root():
+    return {"message": "Hello World"}
+
+
 @inject
 @router.post("/user", status_code=status.HTTP_201_CREATED, response_model=UserSchema)
 def create_user(user_data: UserSchemaCreate, user_use_cases: UserUseCases = Depends(Provide[UserContainer.user_use_cases])):
