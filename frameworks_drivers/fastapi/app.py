@@ -1,13 +1,16 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, Request
+from sqlalchemy.exc import IntegrityError as SQLAlchemyIntegrityError
 from pydantic_settings import BaseSettings
+from domain.exceptions.error_handler import ErrorHandler
+from domain.exceptions.response_validation_error import ResponseValidationError
 from interface_adapters.api import user_routes, root_routes
-from containers.user_container import UserContainer
+from containers.container import Container
 from starlette.middleware.cors import CORSMiddleware
 
 
 class App:
     def __init__(self, settings: BaseSettings, router: APIRouter) -> None:
-        self.user_container: UserContainer = UserContainer()
+        self.user_container: Container = Container()
         self.user_container.init_resources()
         self.user_container.wire(modules=[
             "interface_adapters.api.root_routes",
@@ -28,6 +31,15 @@ class App:
             allow_methods=['*'],
             allow_headers=['*'],
         )
+
+        @self.app.exception_handler(ResponseValidationError)
+        async def response_validation_error(request: Request, exc: ResponseValidationError):
+            return ErrorHandler.response_validation_error_handler(request=request, exc=exc)
+
+
+        @self.app.exception_handler(SQLAlchemyIntegrityError)
+        async def integrity_error(request: Request, exc: SQLAlchemyIntegrityError):
+            return ErrorHandler.integrity_error_handler(request=request, exc=exc)
 
     @classmethod
     def get_app(cls, settings: BaseSettings, router: APIRouter) -> FastAPI:

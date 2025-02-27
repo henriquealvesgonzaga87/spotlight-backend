@@ -1,6 +1,9 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError as SQLAlchemyIntegrityError
+from domain.exceptions.integrity_error import IntegrityError
 from domain.interfaces.user_repository_interface import UserRepositoryInterface
 from domain.entities.user import User
+
 
 
 class SQLAlchemyUserRepository(UserRepositoryInterface):
@@ -13,8 +16,11 @@ class SQLAlchemyUserRepository(UserRepositoryInterface):
             self.session.commit()
             self.session.refresh(user)
             return user
+        except SQLAlchemyIntegrityError as e:
+            self.session.rollback()
+            raise IntegrityError(str(e))
         except Exception as e:
             self.session.rollback()
-            return e
+            raise e
         finally:
             self.session.close()
