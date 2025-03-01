@@ -1,6 +1,4 @@
 from dependency_injector import containers, providers
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from interface_adapters.database.sqlalchemy.dependencies import get_db
 from interface_adapters.database.sqlalchemy.user_repository import SQLAlchemyUserRepository
 from use_cases.user_use_cases import UserUseCases

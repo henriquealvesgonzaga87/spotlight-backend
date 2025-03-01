@@ -2,6 +2,7 @@ from fastapi import FastAPI, APIRouter, Request
 from sqlalchemy.exc import IntegrityError as SQLAlchemyIntegrityError
 from pydantic_settings import BaseSettings
 from domain.exceptions.error_handler import ErrorHandler
+from domain.exceptions.not_found_error import NotFoundError
 from domain.exceptions.response_validation_error import ResponseValidationError
 from interface_adapters.api import user_routes, root_routes
 from containers.container import Container
@@ -33,13 +34,18 @@ class App:
         )
 
         @self.app.exception_handler(ResponseValidationError)
-        async def response_validation_error(request: Request, exc: ResponseValidationError):
-            return ErrorHandler.response_validation_error_handler(request=request, exc=exc)
+        def response_validation_error(request: Request, exc: ResponseValidationError):
+            return ErrorHandler.response_validation_error_handler(request= request, exc=exc)
 
 
         @self.app.exception_handler(SQLAlchemyIntegrityError)
-        async def integrity_error(request: Request, exc: SQLAlchemyIntegrityError):
-            return ErrorHandler.integrity_error_handler(request=request, exc=exc)
+        def integrity_error(request: Request, exc: SQLAlchemyIntegrityError):
+            return ErrorHandler.integrity_error_handler(request= request, exc=exc)
+        
+
+        @self.app.exception_handler(NotFoundError)
+        def not_foud_error(request: Request, exc: NotFoundError):
+            return ErrorHandler.not_found_error_handler(request= request, exc=exc)
 
     @classmethod
     def get_app(cls, settings: BaseSettings, router: APIRouter) -> FastAPI:

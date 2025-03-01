@@ -17,3 +17,12 @@ class UserUseCases:
             raise ValueError('Password cannot be empty')
          
         return self.user_repository.create_user(user=user)
+    
+    def get_user_by_id(self, user_id: int) -> User:
+        if type(user_id) != int:
+            raise ValueError("The given ID must be an integer")
+        
+        if user_id is None:
+            raise ValueError("ID cannot be empty")
+        
+        return self.user_repository.get_user_by_id(user_id=user_id)

@@ -18,3 +18,12 @@ def create_user(user_data: UserSchemaCreate = Body(...), user_use_cases: UserUse
     user_json = jsonable_encoder(obj=user)
 
     return user_json
+
+
+@router.get("/user/{user_id}", status_code=status.HTTP_200_OK, response_model=UserSchema)
+@inject
+def get_user_by_id(user_id: int, user_use_cases: UserUseCases = Depends(Provide[Container.user_use_cases])):
+    user = user_use_cases.get_user_by_id(user_id=user_id)
+    user_json = jsonable_encoder(obj=user)
+
+    return user_json
