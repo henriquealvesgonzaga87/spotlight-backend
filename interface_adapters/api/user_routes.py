@@ -39,3 +39,11 @@ def update_user(user_id: int, user_data: UserSchemaCreate = Body(...), user_use_
     user_json = jsonable_encoder(user)
 
     return user_json
+
+
+@router.delete("/user/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@inject
+def delete_user(user_id: int, user_use_cases: UserUseCases = Depends(Provide[Container.user_use_cases])):
+    user_use_cases.delete_user(user_id=user_id)
+
+    return {"Message": "User deleted"}

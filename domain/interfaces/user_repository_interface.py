@@ -14,3 +14,7 @@ class UserRepositoryInterface(ABC):
     @abstractmethod
     async def update_user(self, user_id, user: User):
         pass
+
+    @abstractmethod
+    async def delete_user(self, user_id: int):
+        pass

@@ -34,3 +34,8 @@ class UserUseCases:
         self.validate_user_id(user_id=user_id)
 
         return self.user_repository.update_user(user_id=user_id, user=user)
+    
+    def delete_user(self, user_id: int):
+        self.validate_user_id(user_id=user_id)
+
+        return self.user_repository.delete_user(user_id=user_id)

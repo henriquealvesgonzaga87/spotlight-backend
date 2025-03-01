@@ -55,3 +55,15 @@ class SQLAlchemyUserRepository(UserRepositoryInterface):
         
         finally:
             self.session.close()
+
+    def delete_user(self, user_id: int):
+        query_user = self.get_user_by_id(user_id=user_id)
+
+        try:
+            self.session.delete(query_user)
+            self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            raise e
+        finally:
+            self.session.close()
