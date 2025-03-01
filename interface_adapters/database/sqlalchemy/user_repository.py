@@ -1,3 +1,4 @@
+from sqlalchemy import update
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError as SQLAlchemyIntegrityError
 from domain.exceptions.integrity_error import IntegrityError
@@ -33,3 +34,24 @@ class SQLAlchemyUserRepository(UserRepositoryInterface):
             raise NotFoundError(message='Not found with the given parameter')
         
         return user
+    
+    def update_user(self, user_id, user: User):
+        query_user = self.get_user_by_id(user_id=user_id)
+
+        try:
+            query_user.name = user.name
+            query_user.email = user.email
+            query_user.password = user.password
+
+            self.session.add(query_user)
+            self.session.commit()
+            self.session.refresh(query_user)
+
+            return query_user
+        
+        except Exception as e:
+            self.session.rollback()
+            raise e
+        
+        finally:
+            self.session.close()
