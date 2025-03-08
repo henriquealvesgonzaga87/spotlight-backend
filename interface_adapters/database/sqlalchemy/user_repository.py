@@ -5,6 +5,7 @@ from domain.exceptions.integrity_error import IntegrityError
 from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.user_repository_interface import UserRepositoryInterface
 from domain.entities.user import User
+from utils.utils import hash
 
 
 
@@ -14,6 +15,8 @@ class SQLAlchemyUserRepository(UserRepositoryInterface):
     
     def create_user(self, user: User) -> User:
         try:
+            hash_password = hash(user.password)
+            user.password = hash_password
             self.session.add(user)
             self.session.commit()
             self.session.refresh(user)
@@ -41,7 +44,8 @@ class SQLAlchemyUserRepository(UserRepositoryInterface):
         try:
             query_user.name = user.name
             query_user.email = user.email
-            query_user.password = user.password
+            hash_password = hash(user.password)
+            query_user.password = hash_password
 
             self.session.add(query_user)
             self.session.commit()
