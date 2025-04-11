@@ -23,10 +23,11 @@ def mock_user_repo_interface():
 
 
 @pytest.fixture
-def mock_user_repo_interface_success(mock_user_repo_interface, user):
+def mock_user_repo_interface_success(mock_user_repo_interface, user, user_updated):
     user_repo_interface = mock_user_repo_interface
     user_repo_interface.create_user.return_value = user
     user_repo_interface.get_user_by_id.return_value = user
+    user_repo_interface.update_user.return_value = user_updated
 
     return user_repo_interface
 
@@ -36,6 +37,7 @@ def mock_user_repo_failure(mock_session):
     user_repo = SQLAlchemyUserRepository(session=mock_session)
     user_repo.create_user = Mock(side_effect=IntegrityError("Integrity error occurred"))
     user_repo.get_user_by_id = Mock(side_effect=NotFoundError("Not found with the given parameter"))
+    user_repo.update_user = Mock(side_effect=Exception("Not found with the given parameter"))
     return user_repo
 
 
@@ -49,12 +51,31 @@ def create_user_data():
 
 
 @pytest.fixture
+def update_user_data():
+    return UserSchemaCreate(
+        name='Test Updated',
+        email='testupdated@mail.com',
+        password='testupdated'
+    )
+
+
+@pytest.fixture
 def user():
     return User(
         id=0,
         name='Test',
         email='test@mail.com',
         password='test'
+    )
+
+
+@pytest.fixture
+def user_updated():
+    return User(
+        id=0,
+        name='Test Updated',
+        email='testupdated@mail.com',
+        password='testupdated'
     )
 
 
