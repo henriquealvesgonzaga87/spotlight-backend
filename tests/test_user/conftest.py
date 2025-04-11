@@ -4,8 +4,9 @@ import pytest
 
 from domain.entities.user import User
 from domain.exceptions.integrity_error import IntegrityError
+from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.user_repository_interface import UserRepositoryInterface
-from domain.schemas.user_schema import UserSchemaCreate
+from domain.schemas.user_schema import UserSchemaCreate, UserSchema
 from interface_adapters.database.sqlalchemy.user_repository import SQLAlchemyUserRepository
 
 
@@ -34,6 +35,7 @@ def mock_user_repo_interface_success(mock_user_repo_interface, user):
 def mock_user_repo_failure(mock_session):
     user_repo = SQLAlchemyUserRepository(session=mock_session)
     user_repo.create_user = Mock(side_effect=IntegrityError("Integrity error occurred"))
+    user_repo.get_user_by_id = Mock(side_effect=NotFoundError("Not found with the given parameter"))
     return user_repo
 
 
