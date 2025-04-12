@@ -6,7 +6,7 @@ from domain.entities.user import User
 from domain.exceptions.integrity_error import IntegrityError
 from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.user_repository_interface import UserRepositoryInterface
-from domain.schemas.user_schema import UserSchemaCreate, UserSchema
+from domain.schemas.user_schema import UserSchemaCreate
 from interface_adapters.database.sqlalchemy.user_repository import SQLAlchemyUserRepository
 
 
@@ -23,10 +23,10 @@ def mock_user_repo_interface():
 
 
 @pytest.fixture
-def mock_user_repo_interface_success(mock_user_repo_interface, user, user_updated):
+def mock_user_repo_interface_success(mock_user_repo_interface, user_created, user_updated):
     user_repo_interface = mock_user_repo_interface
-    user_repo_interface.create_user.return_value = user
-    user_repo_interface.get_user_by_id.return_value = user
+    user_repo_interface.create_user.return_value = user_created
+    user_repo_interface.get_user_by_id.return_value = user_created
     user_repo_interface.update_user.return_value = user_updated
     user_repo_interface.delete_user.return_value = True
 
@@ -62,22 +62,22 @@ def update_user_data():
 
 
 @pytest.fixture
-def user():
+def user_created(create_user_data):
     return User(
         id=0,
-        name='Test',
-        email='test@mail.com',
-        password='test'
+        name=create_user_data.name,
+        email=create_user_data.email,
+        password=create_user_data.password,
     )
 
 
 @pytest.fixture
-def user_updated():
+def user_updated(user_created, update_user_data):
     return User(
-        id=0,
-        name='Test Updated',
-        email='testupdated@mail.com',
-        password='testupdated'
+        id=user_created.id,
+        name=update_user_data.name,
+        email=update_user_data.email,
+        password=update_user_data.password,
     )
 
 
