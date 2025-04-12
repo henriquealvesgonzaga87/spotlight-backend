@@ -28,6 +28,7 @@ def mock_user_repo_interface_success(mock_user_repo_interface, user, user_update
     user_repo_interface.create_user.return_value = user
     user_repo_interface.get_user_by_id.return_value = user
     user_repo_interface.update_user.return_value = user_updated
+    user_repo_interface.delete_user.return_value = True
 
     return user_repo_interface
 
@@ -38,6 +39,7 @@ def mock_user_repo_failure(mock_session):
     user_repo.create_user = Mock(side_effect=IntegrityError("Integrity error occurred"))
     user_repo.get_user_by_id = Mock(side_effect=NotFoundError("Not found with the given parameter"))
     user_repo.update_user = Mock(side_effect=Exception("Not found with the given parameter"))
+    user_repo.delete_user = Mock(side_effect=Exception("Not found with the given parameter"))
     return user_repo
 
 

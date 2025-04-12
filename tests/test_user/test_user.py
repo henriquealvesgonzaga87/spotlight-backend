@@ -58,3 +58,16 @@ class TestUser:
     async def test_update_user_failure(self, mock_user_repo_failure, update_user_data, user_id=99):
         with pytest.raises(Exception, match="Not found with the given parameter"):
             mock_user_repo_failure.update_user(user=update_user_data, user_id=user_id)
+
+
+    @pytest.mark.asyncio
+    async def test_delete_user(self, mock_user_repo_interface_success, user_id=0):
+        delete_user = await mock_user_repo_interface_success.delete_user(user_id=user_id)
+
+        assert delete_user is True
+
+
+    @pytest.mark.asyncio
+    async def test_delete_user_failure(self, mock_user_repo_failure, user_id=99):
+        with pytest.raises(Exception, match="Not found with the given parameter"):
+            mock_user_repo_failure.delete_user(user_id=user_id)
