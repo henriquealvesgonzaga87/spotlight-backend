@@ -1,13 +1,15 @@
 from sqlalchemy.orm import Session
-from unittest.mock import Mock
+from unittest.mock import AsyncMock, Mock
 import pytest
 
+from containers.container import Container
 from domain.entities.user import User
 from domain.exceptions.integrity_error import IntegrityError
 from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.user_repository_interface import UserRepositoryInterface
 from domain.schemas.user_schema import UserSchemaCreate
 from interface_adapters.database.sqlalchemy.user_repository import SQLAlchemyUserRepository
+from use_cases.user_use_cases import UserUseCases
 
 
 @pytest.fixture
@@ -20,6 +22,20 @@ def mock_user_repo_interface():
     user_repo_interface = Mock(spec=UserRepositoryInterface)
 
     return user_repo_interface
+
+
+@pytest.fixture
+def mock_user_use_cases():
+    user_use_cases = Mock(spec=UserUseCases)
+
+    return user_use_cases
+
+
+@pytest.fixture
+def mock_user_repository_for_route_tests(user_created):
+    user_repository = Mock()
+    user_repository.create_user = Mock(return_value=user_created)
+    return user_repository
 
 
 @pytest.fixture
