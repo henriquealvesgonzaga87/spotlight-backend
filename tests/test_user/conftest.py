@@ -25,7 +25,7 @@ def mock_user_repo_interface():
 
 
 @pytest.fixture
-def mock_user_use_cases():
+def mock_user_repo_failure():
     user_use_cases = Mock(spec=UserUseCases)
 
     return user_use_cases
