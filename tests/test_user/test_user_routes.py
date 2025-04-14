@@ -64,7 +64,31 @@ class TestUserRoutes:
 
     @pytest.mark.asyncio
     async def test_route_get_user_by_id_failure(self, mock_user_repo_failure, user_id=99):
-        
         with pytest.raises(NotFoundError):
             mock_user_repo_failure.get_user_by_id(user_id=user_id)
             client.get(f'/user/{user_id}')
+
+    @pytest.mark.asyncio
+    async def test_update_user_success(self, mock_user_use_cases, user_updated, update_user_data, user_id=0):
+        mock_user_use_cases.update_user = Mock(return_value=user_updated)
+
+        user_data = update_user_data.model_dump()
+
+        response = client.put(f'/user/{user_id}', json=user_data)
+
+        assert response.status_code == 200
+        assert response.json() == {
+            "id": 0,
+            "name":'Test Updated',
+            "email":'testupdated@mail.com',
+            "password":'testupdated'
+        }
+
+    @pytest.mark.asyncio
+    async def test_update_user_failure(self, mock_user_repo_failure, update_user_data, user_id=99):
+        with pytest.raises(Exception, match="Not found with the given parameter"):
+            user_data = update_user_data.model_dump()
+
+            mock_user_repo_failure.update_user(user_id=user_id, user=user_data)
+
+            client.put(f"/user/{user_id}", json=user_data)
