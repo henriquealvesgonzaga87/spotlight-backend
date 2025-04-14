@@ -66,6 +66,8 @@ class SQLAlchemyUserRepository(UserRepositoryInterface):
         try:
             self.session.delete(query_user)
             self.session.commit()
+
+            return {"Message": "User deleted"}
         except Exception as e:
             self.session.rollback()
             raise e

@@ -1,3 +1,4 @@
+import json
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends, status, Body
 from fastapi.encoders import jsonable_encoder
@@ -44,6 +45,6 @@ def update_user(user_id: int, user_data: UserSchemaCreate = Body(...), user_use_
 @router.delete("/user/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 @inject
 def delete_user(user_id: int, user_use_cases: UserUseCases = Depends(Provide[Container.user_use_cases])):
-    user_use_cases.delete_user(user_id=user_id)
+    response = user_use_cases.delete_user(user_id=user_id)
 
-    return {"Message": "User deleted"}
+    return json.dumps(obj=response, indent=4)
