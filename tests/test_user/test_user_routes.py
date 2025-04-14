@@ -21,16 +21,12 @@ class TestUserRoutes:
         
     @pytest.mark.asyncio
     async def test_route_create_user_success(self, user_created, create_user_data, mock_user_use_cases):
-        # Simula o comportamento do caso de uso para o teste
         mock_user_use_cases.create_user = Mock(return_value=user_created)
-
-        # Dados de entrada
+       
         user_data = create_user_data.model_dump()
 
-        # Faz a requisição POST
         response = client.post("/user", json=user_data)
 
-        # Verifica o status e o corpo da resposta
         assert response.status_code == 201
         assert response.json() == {
             "id": 0,
@@ -92,3 +88,18 @@ class TestUserRoutes:
             mock_user_repo_failure.update_user(user_id=user_id, user=user_data)
 
             client.put(f"/user/{user_id}", json=user_data)
+
+    @pytest.mark.asyncio
+    async def test_delete_user_success(self, mock_user_use_cases, user_id=0):
+        mock_user_use_cases.delete_user(user_id=user_id)
+
+        response = client.delete(f'/user/{user_id}')
+
+        assert response.status_code == 204
+
+    @pytest.mark.asyncio
+    async def test_delete_user_failue(self, mock_user_repo_failure, user_id=99):
+        with pytest.raises(Exception, match="Not found with the given parameter"):
+            mock_user_repo_failure.delete_user(user_id=user_id)
+
+            client.delete(f"/user/{user_id}")
