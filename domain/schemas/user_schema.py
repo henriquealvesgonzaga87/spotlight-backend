@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Optional
+from datetime import datetime
 
 
 class UserSchema(BaseModel):
@@ -9,6 +10,8 @@ class UserSchema(BaseModel):
     name: str
     email: EmailStr
     password: str
+    created_at: datetime
+    updated_at: datetime | None
 
 
 class UserSchemaCreate(BaseModel):

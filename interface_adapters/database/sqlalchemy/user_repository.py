@@ -1,6 +1,7 @@
-from sqlalchemy import update
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError as SQLAlchemyIntegrityError
+from datetime import datetime
+
 from domain.exceptions.integrity_error import IntegrityError
 from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.user_repository_interface import UserRepositoryInterface
@@ -17,6 +18,7 @@ class SQLAlchemyUserRepository(UserRepositoryInterface):
         try:
             hash_password = hash(user.password)
             user.password = hash_password
+            user.created_at = datetime.utcnow()
             self.session.add(user)
             self.session.commit()
             self.session.refresh(user)
@@ -51,6 +53,8 @@ class SQLAlchemyUserRepository(UserRepositoryInterface):
             if user.password is not None:
                 hash_password = hash(user.password)
                 query_user.password = hash_password
+            
+            query_user.updated_at = datetime.utcnow()
         
             self.session.add(query_user)
             self.session.commit()
