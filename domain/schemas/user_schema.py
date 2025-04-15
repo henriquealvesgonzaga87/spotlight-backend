@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
+from typing import Optional
 
 
 class UserSchema(BaseModel):
@@ -16,3 +17,11 @@ class UserSchemaCreate(BaseModel):
     name: str
     email: EmailStr
     password: str
+
+
+class UserSchemaUpdate(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    password: Optional[str] = None

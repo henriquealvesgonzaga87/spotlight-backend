@@ -42,11 +42,16 @@ class SQLAlchemyUserRepository(UserRepositoryInterface):
         query_user = self.get_user_by_id(user_id=user_id)
 
         try:
-            query_user.name = user.name
-            query_user.email = user.email
-            hash_password = hash(user.password)
-            query_user.password = hash_password
+            if user.name is not None:
+                query_user.name = user.name
+            
+            if user.email is not None:
+                query_user.email = user.email
 
+            if user.password is not None:
+                hash_password = hash(user.password)
+                query_user.password = hash_password
+        
             self.session.add(query_user)
             self.session.commit()
             self.session.refresh(query_user)
