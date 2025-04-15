@@ -70,7 +70,7 @@ class TestUserRoutes:
 
         user_data = update_user_data.model_dump()
 
-        response = client.put(f'/user/{user_id}', json=user_data)
+        response = client.patch(f'/user/{user_id}', json=user_data)
 
         assert response.status_code == 200
         assert response.json() == {
@@ -91,6 +91,7 @@ class TestUserRoutes:
 
     @pytest.mark.asyncio
     async def test_delete_user_success(self, mock_user_use_cases, user_id=0):
+        mock_user_use_cases.delete_user.return_value = {"Message": "User deleted"}
         mock_user_use_cases.delete_user(user_id=user_id)
 
         response = client.delete(f'/user/{user_id}')
