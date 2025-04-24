@@ -1,3 +1,5 @@
+import re
+
 from domain.interfaces.user_repository_interface import UserRepositoryInterface
 from domain.entities.user import User
 
@@ -6,36 +8,43 @@ class UserUseCases:
     def __init__(self, user_repository: UserRepositoryInterface):
         self.user_repository = user_repository
 
-    def validate_user_id(self, user_id):
+    def _validate_user_id(self, user_id):
         if type(user_id) != int:
             raise ValueError("The given ID must be an integer")
         
         if user_id is None:
             raise ValueError("ID cannot be empty")
+        
+    def _validate_user_data(self, user: User):
+        regex_name = r"^[A-Z][a-zA-Z]{2,}$"
 
-    def create_user(self, user: User):
-        if len(user.name) < 2:
-            raise ValueError('Name must have at least 2 characters')
-        if user.name == '':
-            raise ValueError('Name cannot be empty')
+        regex_password = r"^(?=.*[A-Z])(?=.*[@#$%^&+=])(?=.*[a-z])(?=.*[0-9])[A-Za-z\d@#$%^&+=]{8,}$"
+
+        if re.match(regex_name, user.name) is None:
+            raise ValueError('Name must have at least 2 characters and start with a capital letter')
+        
+        if re.match(regex_password, user.password) is None:
+            raise ValueError('Password must contains 8 chars and at least one capital letter, one number and one char between @#$%^&+=')
+        
         if user.email == '':
             raise ValueError('Email cannot be empty')
-        if user.password == '':
-            raise ValueError('Password cannot be empty')
+
+    def create_user(self, user: User):
+        self._validate_user_data(user=user)
          
         return self.user_repository.create_user(user=user)
     
     def get_user_by_id(self, user_id: int) -> User:
-        self.validate_user_id(user_id=user_id)
+        self._validate_user_id(user_id=user_id)
         
         return self.user_repository.get_user_by_id(user_id=user_id)
     
     def update_user(self, user_id: int, user: User):
-        self.validate_user_id(user_id=user_id)
+        self._validate_user_id(user_id=user_id)
 
         return self.user_repository.update_user(user_id=user_id, user=user)
     
     def delete_user(self, user_id: int):
-        self.validate_user_id(user_id=user_id)
+        self._validate_user_id(user_id=user_id)
 
         return self.user_repository.delete_user(user_id=user_id)
