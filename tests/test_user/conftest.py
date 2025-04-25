@@ -1,8 +1,7 @@
-from sqlalchemy.orm import Session
-from unittest.mock import AsyncMock, Mock
 import pytest
+from sqlalchemy.orm import Session
+from unittest.mock import Mock
 
-from containers.container import Container
 from domain.entities.user import User
 from domain.exceptions.integrity_error import IntegrityError
 from domain.exceptions.not_found_error import NotFoundError
@@ -85,6 +84,8 @@ def user_created(create_user_data):
         name=create_user_data.name,
         email=create_user_data.email,
         password=create_user_data.password,
+        created_at="2025-04-24 20:29:20.461333",
+        updated_at=None,
     )
 
 
@@ -95,6 +96,8 @@ def user_updated(user_created, update_user_data):
         name=update_user_data.name,
         email=update_user_data.email,
         password=update_user_data.password,
+        created_at="2025-04-24 20:29:20.461333",
+        updated_at="2025-04-24 20:29:20.461333",
     )
 
 

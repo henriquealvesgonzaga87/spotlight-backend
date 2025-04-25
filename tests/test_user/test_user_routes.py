@@ -32,7 +32,9 @@ class TestUserRoutes:
             "id": 0,
             "name":'Test',
             "email":'test@mail.com',
-            "password":'test'
+            "password":'test',
+            "created_at": "2025-04-24T20:29:20.461333",
+            "updated_at": None
         }
 
     @pytest.mark.asyncio
@@ -55,7 +57,9 @@ class TestUserRoutes:
             "id": 0,
             "name":'Test',
             "email":'test@mail.com',
-            "password":'test'
+            "password":'test',
+            "created_at": "2025-04-24T20:29:20.461333",
+            "updated_at": None
         }
 
     @pytest.mark.asyncio
@@ -77,7 +81,9 @@ class TestUserRoutes:
             "id": 0,
             "name":'Test Updated',
             "email":'testupdated@mail.com',
-            "password":'testupdated'
+            "password":'testupdated',
+            "created_at": "2025-04-24T20:29:20.461333",
+            "updated_at": "2025-04-24T20:29:20.461333"
         }
 
     @pytest.mark.asyncio
