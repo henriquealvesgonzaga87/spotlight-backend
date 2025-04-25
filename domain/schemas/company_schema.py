@@ -8,7 +8,7 @@ class CompanySchema(BaseModel):
     
     id: int
     name: str
-    link: AnyUrl
+    link: AnyUrl | None
     created_at: datetime
     updated_at: datetime | None
 

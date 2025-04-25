@@ -5,7 +5,8 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from domain.entities.user import Base
+from domain.entities.user import Base as UserBase
+from domain.entities.company import Base as CompanyBase
 from settings import get_settings
 
 
@@ -25,7 +26,9 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
+target_metadata = UserBase.metadata
+
+target_metadata = CompanyBase.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
