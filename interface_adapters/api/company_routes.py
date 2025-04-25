@@ -1,0 +1,24 @@
+from fastapi.encoders import jsonable_encoder
+from dependency_injector.wiring import inject, Provide
+from fastapi import APIRouter, status, Depends, Body
+
+from domain.entities.company import Company
+from domain.schemas.company_schema import CompanySchema, CompanySchemaCreate
+from containers.container import Container
+from use_cases.company_use_cases import CompanyUseCases
+
+
+router = APIRouter()
+
+
+@router.post("/company", status_code=status.HTTP_201_CREATED, response_model=CompanySchema)
+@inject
+def create_company(company_data: CompanySchemaCreate = Body(...), company_use_cases: CompanyUseCases = Depends(Provide[Container.company_use_cases])):
+    company = company_use_cases.create_user(
+        Company(
+            name=company_data.name,
+            link=company_data.link
+        ))
+    company_json = jsonable_encoder(obj=company)
+
+    return company_json
