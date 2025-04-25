@@ -14,7 +14,7 @@ router = APIRouter()
 @router.post("/company", status_code=status.HTTP_201_CREATED, response_model=CompanySchema)
 @inject
 def create_company(company_data: CompanySchemaCreate = Body(...), company_use_cases: CompanyUseCases = Depends(Provide[Container.company_use_cases])):
-    company = company_use_cases.create_user(
+    company = company_use_cases.create_company(
         Company(
             name=company_data.name,
             link=company_data.link

@@ -6,6 +6,6 @@ class CompanyUseCases:
     def __init__(self, company_repository: CompanyRepositoryInterface):
         self.company_repository = company_repository
 
-    def create_user(self, company: Company):
+    def create_company(self, company: Company):
         return self.company_repository.create_company(company=company)
     
