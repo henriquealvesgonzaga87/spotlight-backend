@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError as SQLAlchemyIntegrityError
+from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 
 from domain.exceptions.integrity_error import IntegrityError
@@ -23,12 +23,9 @@ class SQLAlchemyUserRepository(UserRepositoryInterface):
             self.session.commit()
             self.session.refresh(user)
             return user
-        except SQLAlchemyIntegrityError as e:
+        except:
             self.session.rollback()
-            raise IntegrityError(str(e))
-        except Exception as e:
-            self.session.rollback()
-            raise e
+            raise IntegrityError(message="Integrity error: duplicate entry or constraint violation.")
         finally:
             self.session.close()
 

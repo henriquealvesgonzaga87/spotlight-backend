@@ -1,5 +1,6 @@
 import re
 
+from domain.exceptions.bad_request_error import BadRequestError
 from domain.interfaces.user_repository_interface import UserRepositoryInterface
 from domain.entities.user import User
 
@@ -10,10 +11,10 @@ class UserUseCases:
 
     def _validate_user_id(self, user_id):
         if type(user_id) != int:
-            raise ValueError("The given ID must be an integer")
+            raise BadRequestError("The given ID must be an integer")
         
         if user_id is None:
-            raise ValueError("ID cannot be empty")
+            raise BadRequestError("ID cannot be empty")
         
     def _validate_user_data(self, user: User):
         regex_name = r"^[A-Z][a-zA-Z]{2,}$"
@@ -21,13 +22,13 @@ class UserUseCases:
         regex_password = r"^(?=.*[A-Z])(?=.*[@#$%^&+=])(?=.*[a-z])(?=.*[0-9])[A-Za-z\d@#$%^&+=]{8,}$"
 
         if re.match(regex_name, user.name) is None:
-            raise ValueError('Name must have at least 2 characters and start with a capital letter')
+            raise BadRequestError('Name must have at least 2 characters and start with a capital letter')
         
         if re.match(regex_password, user.password) is None:
-            raise ValueError('Password must contains 8 chars and at least one capital letter, one number and one char between @#$%^&+=')
+            raise BadRequestError('Password must contains 8 chars and at least one capital letter, one number and one char between @#$%^&+=')
         
         if user.email == '':
-            raise ValueError('Email cannot be empty')
+            raise BadRequestError('Email cannot be empty')
 
     def create_user(self, user: User):
         self._validate_user_data(user=user)
