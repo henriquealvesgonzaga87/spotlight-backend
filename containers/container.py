@@ -9,7 +9,8 @@ settings = get_settings()
 
 class Container(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(modules=[
-        "interface_adapters.api.user_routes",    
+        "interface_adapters.api.root_routes",
+        "interface_adapters.api.user_routes",
     ])
 
     data_base_session = providers.Resource(get_db)
