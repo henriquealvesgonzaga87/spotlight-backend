@@ -1,6 +1,13 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+from datetime import datetime
+
+from domain.exceptions.integrity_error import IntegrityError
+from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.user_repository_interface import UserRepositoryInterface
 from domain.entities.user import User
+from utils.utils import hash
+
 
 
 class SQLAlchemyUserRepository(UserRepositoryInterface):
@@ -9,12 +16,66 @@ class SQLAlchemyUserRepository(UserRepositoryInterface):
     
     def create_user(self, user: User) -> User:
         try:
+            hash_password = hash(user.password)
+            user.password = hash_password
+            user.created_at = datetime.utcnow()
             self.session.add(user)
             self.session.commit()
             self.session.refresh(user)
             return user
+        except:
+            self.session.rollback()
+            raise IntegrityError(message="Integrity error: duplicate entry or constraint violation.")
+        finally:
+            self.session.close()
+
+    def get_user_by_id(self, user_id: int) -> User:
+        user = self.session.query(User).filter(User.id == user_id).first()
+
+        if user is None:
+            raise NotFoundError(message='Not found with the given parameter')
+        
+        return user
+    
+    def update_user(self, user_id, user: User):
+        query_user = self.get_user_by_id(user_id=user_id)
+
+        try:
+            if user.name is not None:
+                query_user.name = user.name
+            
+            if user.email is not None:
+                query_user.email = user.email
+
+            if user.password is not None:
+                hash_password = hash(user.password)
+                query_user.password = hash_password
+            
+            query_user.updated_at = datetime.utcnow()
+        
+            self.session.add(query_user)
+            self.session.commit()
+            self.session.refresh(query_user)
+
+            return query_user
+        
         except Exception as e:
             self.session.rollback()
-            return e
+            raise e
+        
+        finally:
+            self.session.close()
+
+    def delete_user(self, user_id: int):
+        query_user = self.get_user_by_id(user_id=user_id)
+
+        try:
+            self.session.delete(query_user)
+            self.session.commit()
+
+            return {"Message": "User deleted"}
+        except Exception as e:
+            self.session.rollback()
+            raise e
         finally:
             self.session.close()
