@@ -21,4 +21,14 @@ def create_company(company_data: CompanySchemaCreate = Body(...), company_use_ca
         ))
     company_json = jsonable_encoder(obj=company)
 
+
+    return company_json
+
+
+@router.get("/company/{company_id}", status_code=status.HTTP_200_OK, response_model=CompanySchema)
+@inject
+def get_company_by_id(company_id: int, company_use_case: CompanyUseCases = Depends(Provide[Container.company_use_cases])):
+    company = company_use_case.get_company_by_id(company_id=company_id)
+    company_json = jsonable_encoder(obj=company)
+
     return company_json
