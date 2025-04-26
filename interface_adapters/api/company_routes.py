@@ -3,7 +3,7 @@ from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, status, Depends, Body
 
 from domain.entities.company import Company
-from domain.schemas.company_schema import CompanySchema, CompanySchemaCreate
+from domain.schemas.company_schema import CompanySchema, CompanySchemaCreate, CompanySchemaUpdate
 from containers.container import Container
 from use_cases.company_use_cases import CompanyUseCases
 
@@ -41,3 +41,18 @@ def get_all_companies(company_use_case: CompanyUseCases = Depends(Provide[Contai
     companies_json = jsonable_encoder(obj=companies)
 
     return companies_json
+
+
+@router.patch("/company/{company_id}", status_code=status.HTTP_200_OK, response_model=CompanySchema)
+@inject
+def update_company(company_id: int, company_data: CompanySchemaUpdate = Body(...), company_use_cases: CompanyUseCases = Depends(Provide[Container.company_use_cases])):
+    company = company_use_cases.update_company(
+        company_id=company_id,
+        company=Company(
+            name=company_data.name,
+            link=company_data.link,
+        )
+    )
+    company_json = jsonable_encoder(company)
+
+    return company_json

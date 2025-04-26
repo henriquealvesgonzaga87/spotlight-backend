@@ -13,6 +13,11 @@ class CompanyUseCases:
         
         if company_id is None:
             raise BadRequestError("ID cannot be empty")
+        
+    def _convert_url_to_string(self, url):
+        url_to_string = url.unicode_string()
+
+        return url_to_string
 
     def create_company(self, company: Company):
         return self.company_repository.create_company(company=company)
@@ -24,3 +29,8 @@ class CompanyUseCases:
     
     def get_all_companies(self):
         return self.company_repository.get_all_companies()
+    
+    def update_company(self, company_id: int, company: Company):
+        self._validate_company_id(company_id=company_id)
+
+        return self.company_repository.update_company(company_id=company_id, company=company)

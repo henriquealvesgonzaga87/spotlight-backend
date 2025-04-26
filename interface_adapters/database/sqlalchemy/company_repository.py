@@ -14,14 +14,19 @@ class SQLAlchemyCompanyRepository(CompanyRepositoryInterface):
     
     def create_company(self, company: Company) -> Company:
         try:
+            company.link = str(company.link) if company.link else None
             company.created_at = datetime.utcnow()
+
             self.session.add(company)
             self.session.commit()
             self.session.refresh(company)
+            
             return company
+        
         except Exception as e:
             self.session.rollback()
             raise IntegrityError(message=f"Integrity error: duplicate entry or constraint violation. ERROR: {e}")
+        
         finally:
             self.session.close()
 
@@ -40,4 +45,26 @@ class SQLAlchemyCompanyRepository(CompanyRepositoryInterface):
             raise NotFoundError(message="There's no data to show")
 
         return companies
+    
+    def update_company(self, company_id: int, company: Company):
+        query_company = self.get_company_by_id(company_id=company_id)
+        try:
+            if company.name is not None:
+                query_company.name = company.name
+            
+            if company.link is not None:
+                query_company.link = str(company.link)
+
+            query_company.updated_at = datetime.utcnow()
+
+            self.session.add(query_company)
+            self.session.commit()
+            self.session.refresh(query_company)
+
+            return query_company
+        except Exception as e:
+            self.session.rollback()
+            raise IntegrityError(message=f"Integrity error: duplicate entry or constraint violation. ERROR: {e}")
+        finally:
+            self.session.close()
     
