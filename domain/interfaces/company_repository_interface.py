@@ -10,3 +10,7 @@ class CompanyRepositoryInterface(ABC):
     @abstractmethod
     async def get_company_by_id(self, company_id: int):
         pass
+
+    @abstractmethod
+    async def get_all_companies(self):
+        pass

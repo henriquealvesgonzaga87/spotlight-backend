@@ -32,3 +32,12 @@ def get_company_by_id(company_id: int, company_use_case: CompanyUseCases = Depen
     company_json = jsonable_encoder(obj=company)
 
     return company_json
+
+
+@router.get("/company", status_code=status.HTTP_200_OK, response_model=list[CompanySchema])
+@inject
+def get_all_companies(company_use_case: CompanyUseCases = Depends(Provide[Container.company_use_cases])):
+    companies = company_use_case.get_all_companies()
+    companies_json = jsonable_encoder(obj=companies)
+
+    return companies_json

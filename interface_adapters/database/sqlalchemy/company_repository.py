@@ -1,3 +1,4 @@
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from domain.entities.company import Company
@@ -31,4 +32,12 @@ class SQLAlchemyCompanyRepository(CompanyRepositoryInterface):
             raise NotFoundError(message='Not found with the given parameter')
         
         return company
+    
+    def get_all_companies(self):
+        companies = self.session.query(Company).all()
+
+        if len(companies) == 0:
+            raise NotFoundError(message="There's no data to show")
+
+        return companies
     

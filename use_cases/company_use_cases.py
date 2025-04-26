@@ -21,3 +21,6 @@ class CompanyUseCases:
         self._validate_company_id(company_id=company_id)
 
         return self.company_repository.get_company_by_id(company_id=company_id)
+    
+    def get_all_companies(self):
+        return self.company_repository.get_all_companies()
