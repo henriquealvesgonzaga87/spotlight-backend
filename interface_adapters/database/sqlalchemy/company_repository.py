@@ -67,4 +67,23 @@ class SQLAlchemyCompanyRepository(CompanyRepositoryInterface):
             raise IntegrityError(message=f"Integrity error: duplicate entry or constraint violation. ERROR: {e}")
         finally:
             self.session.close()
+
+    def delete_company(self, company_id: int):
+        query_company = self.get_company_by_id(company_id=company_id)
+
+        if query_company is None:
+            raise NotFoundError(message="There's no data to show")
+        
+        try:
+            self.session.delete(query_company)
+            self.session.commit()
+
+            return query_company
+        
+        except Exception as e:
+            self.session.rollback()
+            raise IntegrityError(message=f"An error occurred while deleting the company. ERROR: {e}")
+        
+        finally:
+            self.session.close()
     

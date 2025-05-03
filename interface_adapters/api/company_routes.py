@@ -56,3 +56,11 @@ def update_company(company_id: int, company_data: CompanySchemaUpdate = Body(...
     company_json = jsonable_encoder(company)
 
     return company_json
+
+
+@router.delete("/company/{company_id}", status_code=status.HTTP_204_NO_CONTENT)
+@inject
+def delete_company(company_id: int, company_use_cases: CompanyUseCases = Depends(Provide[Container.company_use_cases])):
+    company = company_use_cases.delete_company(company_id=company_id)
+
+    return {"message": f"{company.name} deleted successfully"}

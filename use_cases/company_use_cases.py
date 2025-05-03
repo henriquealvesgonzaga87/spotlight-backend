@@ -34,3 +34,8 @@ class CompanyUseCases:
         self._validate_company_id(company_id=company_id)
 
         return self.company_repository.update_company(company_id=company_id, company=company)
+    
+    def delete_company(self, company_id: int):
+        self._validate_company_id(company_id=company_id)
+
+        return self.company_repository.delete_company(company_id=company_id)
