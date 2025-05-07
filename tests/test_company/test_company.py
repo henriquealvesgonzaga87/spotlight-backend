@@ -1,6 +1,7 @@
 import pytest
 
 from domain.entities.company import Company
+from domain.exceptions.integrity_error import IntegrityError
 
 
 class TestCompany:
@@ -16,3 +17,8 @@ class TestCompany:
         assert new_company.name == create_company_data.name
         assert new_company.link == create_company_data.link
         assert isinstance(new_company, Company)
+
+    @pytest.mark.asyncio
+    async def test_create_company_failure(self, create_company_data, mock_company_repo_interface_failure):
+        with pytest.raises(IntegrityError, match="Integrity error: duplicate entry or constraint violation."):
+            mock_company_repo_interface_failure.create_company(company=create_company_data)

@@ -3,8 +3,10 @@ from sqlalchemy.orm import Session
 from unittest.mock import Mock
 
 from domain.entities.company import Company
+from domain.exceptions.integrity_error import IntegrityError
 from domain.interfaces.company_repository_interface import CompanyRepositoryInterface
 from domain.schemas.company_schema import CompanySchemaCreate
+from interface_adapters.database.sqlalchemy.company_repository import SQLAlchemyCompanyRepository
 from use_cases.company_use_cases import CompanyUseCases
 
 
@@ -33,6 +35,14 @@ def mock_company_repo_interface_success(mock_company_repo_interface, company_cre
     company_repo_interface.create_company.return_value = company_created
 
     return company_repo_interface
+
+
+@pytest.fixture
+def mock_company_repo_interface_failure(mock_session):
+    company_repo = SQLAlchemyCompanyRepository(session=mock_session)
+    company_repo.create_company = Mock(side_effect=IntegrityError("Integrity error: duplicate entry or constraint violation."))
+
+    return company_repo
 
 
 @pytest.fixture
