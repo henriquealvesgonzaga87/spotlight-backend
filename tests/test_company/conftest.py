@@ -4,6 +4,7 @@ from unittest.mock import Mock
 
 from domain.entities.company import Company
 from domain.exceptions.integrity_error import IntegrityError
+from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.company_repository_interface import CompanyRepositoryInterface
 from domain.schemas.company_schema import CompanySchemaCreate
 from interface_adapters.database.sqlalchemy.company_repository import SQLAlchemyCompanyRepository
@@ -33,6 +34,7 @@ def mock_company_use_cases():
 def mock_company_repo_interface_success(mock_company_repo_interface, company_created):
     company_repo_interface = mock_company_repo_interface
     company_repo_interface.create_company.return_value = company_created
+    company_repo_interface.get_company_by_id.return_value = company_created
 
     return company_repo_interface
 
@@ -41,6 +43,7 @@ def mock_company_repo_interface_success(mock_company_repo_interface, company_cre
 def mock_company_repo_interface_failure(mock_session):
     company_repo = SQLAlchemyCompanyRepository(session=mock_session)
     company_repo.create_company = Mock(side_effect=IntegrityError("Integrity error: duplicate entry or constraint violation."))
+    company_repo.get_company_by_id = Mock(side_effect=NotFoundError("Not found with the given parameter"))
 
     return company_repo
 
