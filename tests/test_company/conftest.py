@@ -31,10 +31,11 @@ def mock_company_use_cases():
 
 
 @pytest.fixture
-def mock_company_repo_interface_success(mock_company_repo_interface, company_created):
+def mock_company_repo_interface_success(mock_company_repo_interface, company_created, companies):
     company_repo_interface = mock_company_repo_interface
     company_repo_interface.create_company.return_value = company_created
     company_repo_interface.get_company_by_id.return_value = company_created
+    company_repo_interface.get_all_companies.return_value = companies
 
     return company_repo_interface
 
@@ -44,6 +45,7 @@ def mock_company_repo_interface_failure(mock_session):
     company_repo = SQLAlchemyCompanyRepository(session=mock_session)
     company_repo.create_company = Mock(side_effect=IntegrityError("Integrity error: duplicate entry or constraint violation."))
     company_repo.get_company_by_id = Mock(side_effect=NotFoundError("Not found with the given parameter"))
+    company_repo.get_all_companies = Mock(side_effect=NotFoundError("There's no data to show"))
 
     return company_repo
 
@@ -65,3 +67,30 @@ def company_created(create_company_data):
         created_at="2025-04-24 20:29:20.461333",
         updated_at=None,
     )
+
+
+@pytest.fixture
+def companies():
+    return [
+        Company(
+            id=0,
+            name="Test",
+            link="https://www.test.com",
+            created_at="2025-04-24 20:29:20.461333",
+            updated_at=None,
+        ),
+        Company(
+            id=1,
+            name="Test One",
+            link="https://www.test.com",
+            created_at="2025-04-24 20:29:20.461333",
+            updated_at=None,
+        ),
+        Company(
+            id=2,
+            name="Test Two",
+            link="https://www.test.com",
+            created_at="2025-04-24 20:29:20.461333",
+            updated_at=None,
+        ),
+    ]

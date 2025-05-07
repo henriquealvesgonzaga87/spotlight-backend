@@ -34,3 +34,14 @@ class TestCompany:
     async def test_get_company_by_id_failure(self, mock_company_repo_interface_failure, company_id=99):
         with pytest.raises(NotFoundError, match="Not found with the given parameter"):
             mock_company_repo_interface_failure.get_company_by_id(company_id=company_id)
+
+    @pytest.mark.asyncio
+    async def test_get_all_companies(self, mock_company_repo_interface_success):
+        query_companies = await mock_company_repo_interface_success.get_all_companies()
+
+        assert len(query_companies) != 0
+
+    @pytest.mark.asyncio
+    async def test_get_all_companies_failure(self, mock_company_repo_interface_failure):
+        with pytest.raises(NotFoundError, match="There's no data to show"):
+            mock_company_repo_interface_failure.get_all_companies()
