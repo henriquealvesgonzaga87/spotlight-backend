@@ -1,3 +1,4 @@
+from unittest.mock import Mock
 import pytest
 
 from domain.entities.company import Company
@@ -59,3 +60,21 @@ class TestCompany:
     async def test_update_company_failure(self, mock_company_repo_interface_failure, update_company_data, company_id=99):
         with pytest.raises(IntegrityError, match="Integrity error: duplicate entry or constraint violation."):
             mock_company_repo_interface_failure.update_company(company_id=company_id, company=update_company_data)
+
+    @pytest.mark.asyncio
+    async def test_delete_company(self, mock_company_repo_interface_success, company_id=0):
+        deleted_company = await mock_company_repo_interface_success.delete_company(company_id=company_id)
+
+        assert deleted_company is True
+
+    @pytest.mark.asyncio
+    async def test_delete_company_failure_wrong_id(self, mock_company_repo_interface_failure, company_id=99):
+        with pytest.raises(NotFoundError, match="Not found with the given parameter"):
+            mock_company_repo_interface_failure.delete_company(company_id=company_id)
+
+    @pytest.mark.asyncio
+    async def test_delete_company_failure_integrity_error(self, mock_company_repo_interface_failure, company_id=99):
+        mock_company_repo_interface_failure.delete_company = Mock(side_effect=IntegrityError("An error occurred while deleting the company."))
+        with pytest.raises(IntegrityError, match="An error occurred while deleting the company."):
+            mock_company_repo_interface_failure.delete_company(company_id=company_id)
+

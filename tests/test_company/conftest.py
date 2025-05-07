@@ -37,6 +37,7 @@ def mock_company_repo_interface_success(mock_company_repo_interface, company_cre
     company_repo_interface.get_company_by_id.return_value = company_created
     company_repo_interface.get_all_companies.return_value = companies
     company_repo_interface.update_company.return_value = company_updated
+    company_repo_interface.delete_company.return_value = True
 
     return company_repo_interface
 
@@ -48,6 +49,7 @@ def mock_company_repo_interface_failure(mock_session):
     company_repo.get_company_by_id = Mock(side_effect=NotFoundError("Not found with the given parameter"))
     company_repo.get_all_companies = Mock(side_effect=NotFoundError("There's no data to show"))
     company_repo.update_company = Mock(side_effect=IntegrityError("Integrity error: duplicate entry or constraint violation."))
+    company_repo.delete_company = Mock(side_effect=NotFoundError("Not found with the given parameter"))
 
     return company_repo
 
