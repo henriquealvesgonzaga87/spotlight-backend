@@ -31,6 +31,14 @@ def mock_company_use_cases():
 
 
 @pytest.fixture
+def mock_company_repository_for_route_tests(company_created):
+    company_repository = Mock()
+    company_repository.create_company = Mock(return_value=company_created)
+
+    return company_repository
+
+
+@pytest.fixture
 def mock_company_repo_interface_success(mock_company_repo_interface, company_created, companies, company_updated):
     company_repo_interface = mock_company_repo_interface
     company_repo_interface.create_company.return_value = company_created

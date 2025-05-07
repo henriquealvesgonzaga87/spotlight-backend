@@ -1,0 +1,46 @@
+from unittest.mock import Mock
+import pytest
+from fastapi.testclient import TestClient
+from containers.container import Container
+
+from domain.exceptions.integrity_error import IntegrityError
+from interface_adapters.api.company_routes import router
+
+
+client = TestClient(router)
+
+
+class TestCompanyRoutes:
+    @pytest.fixture(autouse=True)
+    def setup(self, mock_company_use_cases, mock_company_repository_for_route_tests):
+        container = Container()
+        container.wire(modules=["interface_adapters.api.company_routes"])
+        container.company_repository.override(mock_company_repository_for_route_tests)
+        container.company_use_cases.override(mock_company_use_cases)
+        
+    @pytest.mark.asyncio
+    async def test_route_create_company_success(self, company_created, create_company_data, mock_company_use_cases):
+        mock_company_use_cases.create_company = Mock(return_value=company_created)
+
+        create_company_data.link = str(create_company_data.link)
+        company_data = create_company_data.model_dump()
+
+        response = client.post("/company", json=company_data)
+
+        assert response.status_code == 201
+        assert response.json() == {
+            "id": 0,
+            "name": "Test",
+            "link": "https://www.test.com/",
+            "created_at": "2025-04-24T20:29:20.461333",
+            "updated_at": None,
+        }
+
+    @pytest.mark.asyncio
+    async def test_route_create_company_failure(self, mock_company_repo_interface_failure, create_company_data):
+        with pytest.raises(IntegrityError, match="Integrity error: duplicate entry or constraint violation."):
+            company_data = create_company_data.model_dump()
+
+            mock_company_repo_interface_failure.create_company(company=company_data)
+
+            client.post("/company", json=company_data)
