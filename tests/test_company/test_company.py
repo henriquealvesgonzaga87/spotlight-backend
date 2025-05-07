@@ -45,3 +45,17 @@ class TestCompany:
     async def test_get_all_companies_failure(self, mock_company_repo_interface_failure):
         with pytest.raises(NotFoundError, match="There's no data to show"):
             mock_company_repo_interface_failure.get_all_companies()
+
+    @pytest.mark.asyncio
+    async def test_update_company(self, mock_company_repo_interface_success, update_company_data, company_id=0):
+        updated_company = await mock_company_repo_interface_success.update_company(company_id=company_id, company=update_company_data)
+
+        assert updated_company is not None
+        assert updated_company.name == update_company_data.name
+        assert updated_company.link == update_company_data.link
+        assert isinstance(updated_company, Company)
+
+    @pytest.mark.asyncio
+    async def test_update_company_failure(self, mock_company_repo_interface_failure, update_company_data, company_id=99):
+        with pytest.raises(IntegrityError, match="Integrity error: duplicate entry or constraint violation."):
+            mock_company_repo_interface_failure.update_company(company_id=company_id, company=update_company_data)

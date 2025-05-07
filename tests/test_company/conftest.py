@@ -31,11 +31,12 @@ def mock_company_use_cases():
 
 
 @pytest.fixture
-def mock_company_repo_interface_success(mock_company_repo_interface, company_created, companies):
+def mock_company_repo_interface_success(mock_company_repo_interface, company_created, companies, company_updated):
     company_repo_interface = mock_company_repo_interface
     company_repo_interface.create_company.return_value = company_created
     company_repo_interface.get_company_by_id.return_value = company_created
     company_repo_interface.get_all_companies.return_value = companies
+    company_repo_interface.update_company.return_value = company_updated
 
     return company_repo_interface
 
@@ -46,6 +47,7 @@ def mock_company_repo_interface_failure(mock_session):
     company_repo.create_company = Mock(side_effect=IntegrityError("Integrity error: duplicate entry or constraint violation."))
     company_repo.get_company_by_id = Mock(side_effect=NotFoundError("Not found with the given parameter"))
     company_repo.get_all_companies = Mock(side_effect=NotFoundError("There's no data to show"))
+    company_repo.update_company = Mock(side_effect=IntegrityError("Integrity error: duplicate entry or constraint violation."))
 
     return company_repo
 
@@ -59,6 +61,14 @@ def create_company_data():
 
 
 @pytest.fixture
+def update_company_data():
+    return CompanySchemaCreate(
+        name='Test Updated',
+        link="https://www.testupdated.com"
+    )
+
+
+@pytest.fixture
 def company_created(create_company_data):
     return Company(
         id=0,
@@ -66,6 +76,17 @@ def company_created(create_company_data):
         link=create_company_data.link,
         created_at="2025-04-24 20:29:20.461333",
         updated_at=None,
+    )
+
+
+@pytest.fixture
+def company_updated(company_created, update_company_data):
+    return Company(
+        id=company_created.id,
+        name=update_company_data.name,
+        link=update_company_data.link,
+        created_at="2025-04-24 20:29:20.461333",
+        updated_at="2025-04-24 20:29:20.461333",
     )
 
 
