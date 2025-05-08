@@ -128,3 +128,27 @@ class TestCompanyRoutes:
         with pytest.raises(IntegrityError, match="Integrity error: duplicate entry or constraint violation."):
             mock_company_repo_interface_failure.update_company(company_id=company_id, company=update_company_data)
             client.patch(f"/company/{company_id}", json=update_company_data)
+
+    @pytest.mark.asyncio
+    async def test_route_delete_company_success(self, mock_company_use_cases, company_created, company_id=0):
+        mock_company_use_cases.delete_company = Mock(return_value=company_created)
+        
+        mock_company_use_cases.delete_company(company_id=company_id)
+
+        response = client.delete(f"/company/{company_id}")
+
+        assert response.status_code == 204
+
+    @pytest.mark.asyncio
+    async def test_route_delete_company_failure_id_not_found(self, mock_company_repo_interface_failure, company_id=99):
+        with pytest.raises(NotFoundError, match="Not found with the given parameter"):
+            mock_company_repo_interface_failure.delete_company(company_id=company_id)
+            client.delete(f"/company/{company_id}")
+
+    @pytest.mark.asyncio
+    async def test_route_delete_company_failure_for_exception(self, mock_company_repo_interface_failure, company_id=99):
+        mock_company_repo_interface_failure.delete_company = Mock(side_effect=IntegrityError("An error occurred while deleting the company."))
+
+        with pytest.raises(IntegrityError, match="An error occurred while deleting the company."):
+            mock_company_repo_interface_failure.delete_company(company_id=company_id)
+            client.delete(f"/company/{company_id}")
