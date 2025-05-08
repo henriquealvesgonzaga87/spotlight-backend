@@ -104,3 +104,27 @@ class TestCompanyRoutes:
         with pytest.raises(NotFoundError, match="There's no data to show"):
             mock_company_repo_interface_failure.get_all_companies()
             client.get("/company")
+
+    @pytest.mark.asyncio
+    async def test_route_update_company_success(self, mock_company_use_cases, company_updated, update_company_data, company_id=0):
+        mock_company_use_cases.update_company = Mock(return_value=company_updated)
+
+        update_company_data.link = str(update_company_data.link)
+        company_data = update_company_data.model_dump()
+
+        response = client.patch(f"/company/{company_id}", json=company_data)
+
+        assert response.status_code == 200
+        assert response.json() == {
+            'id': 0, 
+            'name': 'Test Updated', 
+            'link': 'https://www.testupdated.com/', 
+            'created_at': '2025-04-24T20:29:20.461333', 
+            'updated_at': '2025-04-24T20:29:20.461333'
+        }
+
+    @pytest.mark.asyncio
+    async def test_route_update_company_failure(self, mock_company_repo_interface_failure, update_company_data, company_id=99):
+        with pytest.raises(IntegrityError, match="Integrity error: duplicate entry or constraint violation."):
+            mock_company_repo_interface_failure.update_company(company_id=company_id, company=update_company_data)
+            client.patch(f"/company/{company_id}", json=update_company_data)
