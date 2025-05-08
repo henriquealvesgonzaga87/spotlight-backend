@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 from containers.container import Container
 
 from domain.exceptions.integrity_error import IntegrityError
+from domain.exceptions.not_found_error import NotFoundError
 from interface_adapters.api.company_routes import router
 
 
@@ -44,3 +45,24 @@ class TestCompanyRoutes:
             mock_company_repo_interface_failure.create_company(company=company_data)
 
             client.post("/company", json=company_data)
+
+    @pytest.mark.asyncio
+    async def test_route_get_company_by_id_success(self, mock_company_use_cases, company_created, company_id=0):
+        mock_company_use_cases.get_company_by_id = Mock(return_value=company_created)
+
+        response = client.get(f'/company/{company_id}')
+
+        assert response.status_code == 200
+        assert response.json() == {
+            "id": 0,
+            "name": "Test",
+            "link": "https://www.test.com/",
+            "created_at": "2025-04-24T20:29:20.461333",
+            "updated_at": None,
+        }
+
+    @pytest.mark.asyncio
+    async def test_route_get_company_by_id_failure(self, mock_company_repo_interface_failure, company_id=99):
+        with pytest.raises(NotFoundError, match="Not found with the given parameter"):
+            mock_company_repo_interface_failure.get_company_by_id(company_id=company_id)
+            client.get(f"company/{company_id}")
