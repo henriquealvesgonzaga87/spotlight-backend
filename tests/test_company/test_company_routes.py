@@ -66,3 +66,41 @@ class TestCompanyRoutes:
         with pytest.raises(NotFoundError, match="Not found with the given parameter"):
             mock_company_repo_interface_failure.get_company_by_id(company_id=company_id)
             client.get(f"company/{company_id}")
+
+    @pytest.mark.asyncio
+    async def test_route_get_all_companies_success(self, mock_company_use_cases, companies):
+        mock_company_use_cases.get_all_companies = Mock(return_value=companies)
+
+        response = client.get("/company")
+
+        assert response.status_code == 200
+        assert isinstance(response.json(), list)
+        assert response.json() == [
+            {
+                'id': 0, 
+                'name': 'Test', 
+                'link': 'https://www.test.com/', 
+                'created_at': '2025-04-24T20:29:20.461333', 
+                'updated_at': None
+            }, 
+            {
+                'id': 1, 
+                'name': 'Test One', 
+                'link': 'https://www.test.com/', 
+                'created_at': '2025-04-24T20:29:20.461333', 
+                'updated_at': None
+            }, 
+            {
+                'id': 2, 
+                'name': 'Test Two', 
+                'link': 'https://www.test.com/', 
+                'created_at': '2025-04-24T20:29:20.461333', 
+                'updated_at': None
+            }
+        ]
+
+    @pytest.mark.asyncio
+    async def test_route_get_all_companies_failure(self, mock_company_repo_interface_failure):
+        with pytest.raises(NotFoundError, match="There's no data to show"):
+            mock_company_repo_interface_failure.get_all_companies()
+            client.get("/company")
