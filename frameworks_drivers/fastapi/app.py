@@ -5,24 +5,25 @@ from domain.exceptions.bad_request_error import BadRequestError
 from domain.exceptions.error_handler import ErrorHandler
 from domain.exceptions.not_found_error import NotFoundError
 from domain.exceptions.response_validation_error import ResponseValidationError
-from interface_adapters.api import user_routes, root_routes
+from interface_adapters.api import user_routes, root_routes, company_routes
 from containers.container import Container
 from starlette.middleware.cors import CORSMiddleware
 
 
 class App:
-    def __init__(self, settings: BaseSettings, router: APIRouter) -> None:
+    def __init__(self, settings: BaseSettings) -> None:
         self.user_container: Container = Container()
         self.user_container.init_resources()
         self.user_container.wire(modules=[
             "interface_adapters.api.root_routes",
-            "interface_adapters.api.user_routes"
+            "interface_adapters.api.user_routes",
+            "interface_adapters.api.company_routes",
         ])
 
         self.app = FastAPI(title=settings.PROJECT_NAME, root_path=settings.ROOT_PATH)
-        self.app.include_router(router=router, prefix=settings.PREFIX)
-        self.app.include_router(root_routes.router)
-        self.app.include_router(user_routes.router)
+        self.app.include_router(root_routes.router, prefix=settings.PREFIX)
+        self.app.include_router(user_routes.router, prefix=settings.PREFIX)
+        self.app.include_router(company_routes.router, prefix=settings.PREFIX)
 
         origins = ['*']
 
@@ -51,6 +52,6 @@ class App:
             return ErrorHandler.bad_request_error_handler(request=request, exc=exc)
 
     @classmethod
-    def get_app(cls, settings: BaseSettings, router: APIRouter) -> FastAPI:
-        app_instance = cls(settings=settings, router=router)
+    def get_app(cls, settings: BaseSettings) -> FastAPI:
+        app_instance = cls(settings=settings)
         return app_instance.app

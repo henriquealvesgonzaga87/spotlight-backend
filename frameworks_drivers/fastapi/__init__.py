@@ -4,4 +4,4 @@ from settings import get_settings
 
 
 settings = get_settings()
-app = App.get_app(settings=settings, router=user_routes)
+app = App.get_app(settings=settings)
