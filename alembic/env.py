@@ -27,9 +27,9 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = UserBase.metadata
+# target_metadata = UserBase.metadata
 
-target_metadata = CompanyBase.metadata
+# target_metadata = CompanyBase.metadata
 
 target_metadata = LocationBase.metadata
 
