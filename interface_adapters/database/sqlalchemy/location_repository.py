@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 import requests
 
-from domain.entities.location import Country
+from domain.entities.location import City, Country
 from domain.exceptions.integrity_error import IntegrityError
 from domain.interfaces.location_repository_interface import LocationRepositoryInterface
 
@@ -33,4 +33,19 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
         
         finally:
             self.session.close()
+
+    def create_city(self, city: City):
+        try:
+            self.session.add(city)
+            self.session.commit()
+            self.session.refresh(city)
+
+            return city
+
+        except Exception as e:
+            self.session.rollback()
+            raise IntegrityError(f"Error to save the city. !!!ERROR: {e}")
+
+        finally:
+            self.session.close()        
     
