@@ -28,7 +28,9 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
                 self.session.commit()
                 self.session.refresh(country)
 
-            return country
+                return country
+            
+            return query_country
         
         except Exception as e:
             self.session.rollback()

@@ -31,13 +31,18 @@ class LocationUseCases:
             raise BadRequestError('Name must have at least 2 characters and start with a capital letter')
 
     def create_country(self, country: Country):
-        response = requests.get(self._API_COUNTRIES.format(name=country.common_name))
-        response_json = response.json()["geonames"]
+        try:
+            response = requests.get(self._API_COUNTRIES.format(name=country.common_name))
+            response_json = response.json()["geonames"]
 
-        for item in response_json:
-            country = Country(common_name=item["countryName"], code=item["countryCode"])
+            if len(response_json) > 0:
+                country_data = response_json[0]
+                country = Country(common_name=country_data["countryName"], code=country_data["countryCode"])
 
-        return self.location_repository.create_country(country=country)
+                return self.location_repository.create_country(country=country)
+        
+        except Exception as e:
+            raise BadRequestError(f"Something went wrong to get data from the Location API. ERROR: {e} + {response.content}")
     
     def create_city(self, city: City):
         self._validate_country_id(country_id=city.country_id)
