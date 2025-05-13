@@ -7,3 +7,4 @@ __pycache__
 app.db
 wiki.md
 alembic.md
+scripts.sql

@@ -29,3 +29,6 @@ class LocationUseCases:
         self._validate_city_name(city=city)
 
         return self.location_repository.create_city(city=city)
+    
+    def create_location(self):
+        return self.location_repository.create_location()

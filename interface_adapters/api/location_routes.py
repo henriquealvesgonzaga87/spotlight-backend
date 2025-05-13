@@ -30,3 +30,11 @@ def create_city(city_data: CityCreateSchema, location_use_case: LocationUseCases
     city_json = jsonable_encoder(obj=city)
 
     return city_json
+
+
+@router.post("/location", status_code=status.HTTP_201_CREATED)
+@inject
+def create_location(location_use_cases: LocationUseCases = Depends(Provide[Container.location_use_cases])):
+    location_use_cases.create_location()
+
+    return "seeded successfully"

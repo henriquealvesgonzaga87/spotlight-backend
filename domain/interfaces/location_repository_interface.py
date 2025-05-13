@@ -11,3 +11,7 @@ class LocationRepositoryInterface(ABC):
     @abstractmethod
     async def create_city(self, city: City):
         pass
+
+    @abstractmethod
+    async def create_location(self):
+        pass
