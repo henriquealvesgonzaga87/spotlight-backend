@@ -19,16 +19,16 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
         self._API_STATES = os.getenv("API_STATES")
         self._API_CITIES = os.getenv("API_CITIES")
     
-    def create_country(self):
+    def create_country(self, country: Country):
         try:
-            response = requests.get(self._API_URL)
-            countries = response.json()
-            
-            for country in countries:
-                country_obj = Country(name=country["name"]["common"], code=country["cca2"])
-                self.session.add(country_obj)
-            
-            self.session.commit()
+            query_country = self.session.query(Country).filter(Country.common_name == country.common_name).first()
+
+            if query_country is None:
+                self.session.add(country)
+                self.session.commit()
+                self.session.refresh(country)
+
+            return country
         
         except Exception as e:
             self.session.rollback()
