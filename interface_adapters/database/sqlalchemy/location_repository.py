@@ -5,6 +5,7 @@ import requests
 
 from domain.entities.location import City, Country, State
 from domain.exceptions.integrity_error import IntegrityError
+from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.location_repository_interface import LocationRepositoryInterface
 
 
@@ -36,6 +37,14 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
         
         finally:
             self.session.close()
+
+    def get_countries(self):
+        countries = self.session.query(Country).all()
+
+        if len(countries) == 0:
+            raise NotFoundError(message="There's no data to show")
+        
+        return countries
 
     def create_state(self, state: State, country_name: str):
         response_states = requests.get(self._API_STATES.format(code=country_name))

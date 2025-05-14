@@ -19,6 +19,16 @@ def create_country(location_use_cases: LocationUseCases = Depends(Provide[Contai
     return "Countries created successfully"
 
 
+@router.get("/location/country", status_code=status.HTTP_200_OK, response_model=list[CountrySchema])
+@inject
+def get_countries(location_use_cases: LocationUseCases = Depends(Provide[Container.location_use_cases])):
+    countries = location_use_cases.get_countries()
+
+    countries_json = jsonable_encoder(countries)
+
+    return countries_json
+
+
 @router.post("/location/state", status_code=status.HTTP_201_CREATED, response_model=StateSchema)
 @inject
 def create_state(state_data: StateCreateSchema = Body(...), location_use_cases: LocationUseCases = Depends(Provide[Container.location_use_cases])):

@@ -32,6 +32,9 @@ class LocationUseCases:
 
     def create_country(self):
         return self.location_repository.create_country()
+    
+    def get_countries(self):
+        return self.location_repository.get_countries()
         
     def create_state(self, state: State):
         self.location_repository.create_state(state=state)
