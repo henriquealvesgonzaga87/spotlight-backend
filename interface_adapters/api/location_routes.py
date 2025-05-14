@@ -1,28 +1,37 @@
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, status, Depends, Body
 from fastapi.encoders import jsonable_encoder
 from dependency_injector.wiring import inject, Provide
 
 from containers.container import Container
-from domain.entities.location import City, Country
-from domain.schemas.location_schema import CityCreateSchema, CitySchema, CountryCreateSchema, CountrySchema
+from domain.entities.location import City, Country, State
+from domain.schemas.location_schema import CityCreateSchema, CitySchema, CountryCreateSchema, CountrySchema, StateCreateSchema, StateSchema
 from use_cases.location_use_cases import LocationUseCases
 
 
 router = APIRouter()
 
 
-@router.post("/location/country", status_code=status.HTTP_201_CREATED, response_model=CountrySchema)
+@router.post("/location/country", status_code=status.HTTP_201_CREATED)
 @inject
-def create_country(country_data: CountryCreateSchema, location_use_cases: LocationUseCases = Depends(Provide[Container.location_use_cases])):
-    country = location_use_cases.create_country(
-        country=Country(
-            common_name=country_data.common_name
+def create_country(location_use_cases: LocationUseCases = Depends(Provide[Container.location_use_cases])):
+    location_use_cases.create_country()
+
+    return "Countries created successfully"
+
+
+@router.post("/location/state", status_code=status.HTTP_201_CREATED, response_model=StateSchema)
+@inject
+def create_state(state_data: StateCreateSchema = Body(...), location_use_cases: LocationUseCases = Depends(Provide[Container.location_use_cases])):
+    state = location_use_cases.create_state(
+        state=State(
+            name=state_data.name,
+            country_id=state_data.country_id
         )
     )
 
-    country_json = jsonable_encoder(country)
+    state_json = jsonable_encoder(state)
 
-    return country_json
+    return state_json
 
 
 @router.post("/location/city", status_code=status.HTTP_201_CREATED, response_model=CitySchema)

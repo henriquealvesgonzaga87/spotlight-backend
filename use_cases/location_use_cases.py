@@ -4,7 +4,7 @@ import requests
 
 from dotenv import load_dotenv
 
-from domain.entities.location import City, Country
+from domain.entities.location import City, Country, State
 from domain.exceptions.bad_request_error import BadRequestError
 from domain.interfaces.location_repository_interface import LocationRepositoryInterface
 
@@ -30,19 +30,11 @@ class LocationUseCases:
         if re.match(regex_name, city.name) is None:
             raise BadRequestError('Name must have at least 2 characters and start with a capital letter')
 
-    def create_country(self, country: Country):
-        try:
-            response = requests.get(self._API_COUNTRIES.format(name=country.common_name))
-            response_json = response.json()["geonames"]
-
-            if len(response_json) > 0:
-                country_data = response_json[0]
-                country = Country(common_name=country_data["countryName"], code=country_data["countryCode"])
-
-                return self.location_repository.create_country(country=country)
+    def create_country(self):
+        return self.location_repository.create_country()
         
-        except Exception as e:
-            raise BadRequestError(f"Something went wrong to get data from the Location API. ERROR: {e} + {response.content}")
+    def create_state(self, state: State):
+        self.location_repository.create_state(state=state)
     
     def create_city(self, city: City):
         self._validate_country_id(country_id=city.country_id)

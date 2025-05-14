@@ -1,11 +1,15 @@
 from abc import ABC, abstractmethod
 
-from domain.entities.location import City, Country
+from domain.entities.location import City, Country, State
 
 
 class LocationRepositoryInterface(ABC):
     @abstractmethod
-    async def create_country(self, country: Country):
+    async def create_country(self):
+        pass
+
+    @abstractmethod
+    async def create_state(self, state: State):
         pass
 
     @abstractmethod

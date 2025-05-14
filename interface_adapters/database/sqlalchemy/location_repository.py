@@ -19,25 +19,27 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
         self._API_STATES = os.getenv("API_STATES")
         self._API_CITIES = os.getenv("API_CITIES")
     
-    def create_country(self, country: Country):
+    def create_country(self):
         try:
-            query_country = self.session.query(Country).filter(Country.common_name == country.common_name).first()
+            response = requests.get(self._API_COUNTRIES)
+            countries = response.json()["geonames"]
 
-            if query_country is None:
-                self.session.add(country)
+            for country in countries:
+                country_obj = Country(common_name=country["countryName"], code=country["countryCode"])
+                self.session.add(country_obj)
                 self.session.commit()
-                self.session.refresh(country)
+                self.session.refresh(country_obj)
 
-                return country
-            
-            return query_country
-        
         except Exception as e:
             self.session.rollback()
             raise IntegrityError(f"!!!ERROR: {e}")
         
         finally:
             self.session.close()
+
+    def create_state(self, state: State, country_name: str):
+        response_states = requests.get(self._API_STATES.format(code=country_name))
+        states = response_states.json()["geonames"]
 
     def create_city(self, city: City):
         try:

@@ -20,3 +20,14 @@ class CountrySchema(BaseModel):
     id: int
     common_name: str
     code: str
+
+
+class StateSchema(BaseModel):
+    id: int
+    name: str
+    country_id: int
+
+
+class StateCreateSchema(BaseModel):
+    name: str
+    country_id: int
