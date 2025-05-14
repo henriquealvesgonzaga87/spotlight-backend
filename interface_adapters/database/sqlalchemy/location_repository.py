@@ -53,6 +53,22 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
             raise NotFoundError("Not found with the given parameter")
         
         return country
+    
+    def get_states(self, country_name: str):
+        states = []
+        country = self.session.query(Country).filter(Country.common_name == country_name).first()
+
+        if country is None:
+            raise NotFoundError(f"Country {country_name} not found. Please check the country's name and try again")
+        
+        response_states = requests.get(self._API_STATES.format(country_code=country.code))
+        states_json = response_states.json()["geonames"]
+
+        for state in states_json:
+            state_obj = State(id=None, name=state["name"], country_id=country.id)
+            states.append(state_obj)
+
+        return states
 
     def create_state(self, state: State, country_name: str):
         response_states = requests.get(self._API_STATES.format(code=country_name))

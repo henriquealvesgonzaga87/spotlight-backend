@@ -17,6 +17,10 @@ class LocationRepositoryInterface(ABC):
         pass
 
     @abstractmethod
+    async def get_states(self, country_name: str):
+        pass
+
+    @abstractmethod
     async def create_state(self, state: State):
         pass
 

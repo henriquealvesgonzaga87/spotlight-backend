@@ -39,6 +39,17 @@ class LocationUseCases:
     def get_country_by_id(self, country_id: int):
         self._validate_country_id(country_id=country_id)
         return self.location_repository.get_country_by_id(country_id=country_id)
+    
+    def get_states(self, country_name: str):
+        chars_to_replace = ["-", "%", "&"]
+        for char in chars_to_replace:
+            if char in country_name:
+                correct_name = country_name.replace(char, ' ')
+                break
+        
+        country_name = correct_name
+
+        return self.location_repository.get_states(country_name=country_name)
         
     def create_state(self, state: State):
         self.location_repository.create_state(state=state)

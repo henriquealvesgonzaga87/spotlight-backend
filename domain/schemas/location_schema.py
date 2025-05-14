@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class CitySchema(BaseModel):
@@ -23,7 +23,9 @@ class CountrySchema(BaseModel):
 
 
 class StateSchema(BaseModel):
-    id: int
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    
+    id: int | None
     name: str
     country_id: int
 
