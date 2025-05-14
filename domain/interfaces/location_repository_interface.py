@@ -13,6 +13,10 @@ class LocationRepositoryInterface(ABC):
         pass
 
     @abstractmethod
+    async def get_country_by_id(self, country_id: int):
+        pass
+
+    @abstractmethod
     async def create_state(self, state: State):
         pass
 

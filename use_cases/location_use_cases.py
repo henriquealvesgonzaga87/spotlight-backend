@@ -35,6 +35,10 @@ class LocationUseCases:
     
     def get_countries(self):
         return self.location_repository.get_countries()
+    
+    def get_country_by_id(self, country_id: int):
+        self._validate_country_id(country_id=country_id)
+        return self.location_repository.get_country_by_id(country_id=country_id)
         
     def create_state(self, state: State):
         self.location_repository.create_state(state=state)

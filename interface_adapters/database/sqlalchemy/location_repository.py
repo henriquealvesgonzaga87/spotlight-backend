@@ -45,6 +45,14 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
             raise NotFoundError(message="There's no data to show")
         
         return countries
+    
+    def get_country_by_id(self, country_id: int):
+        country = self.session.query(Country).filter(Country.id == country_id).first()
+
+        if country is None:
+            raise NotFoundError("Not found with the given parameter")
+        
+        return country
 
     def create_state(self, state: State, country_name: str):
         response_states = requests.get(self._API_STATES.format(code=country_name))
