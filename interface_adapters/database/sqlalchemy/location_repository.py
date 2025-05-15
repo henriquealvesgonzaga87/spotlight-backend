@@ -18,7 +18,16 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
         self._API_URL = os.getenv("API_URL")
         self._API_COUNTRIES = os.getenv("API_COUNTRIES")
         self._API_STATES = os.getenv("API_STATES")
+        self._API_STATE = os.getenv("API_STATE")
         self._API_CITIES = os.getenv("API_CITIES")
+
+    def _filter_location(self, model, column, filter: str):
+        query = self.session.query(model).filter(column == filter).first()
+
+        if query is None:
+            raise NotFoundError(f"{query} not found. Please check the country's name and try again")
+        
+        return query
     
     def create_country(self):
         try:
@@ -56,10 +65,7 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
     
     def get_states(self, country_name: str):
         states = []
-        country = self.session.query(Country).filter(Country.common_name == country_name).first()
-
-        if country is None:
-            raise NotFoundError(f"Country {country_name} not found. Please check the country's name and try again")
+        country = self._filter_location(model=Country, column=Country.common_name, filter=country_name)
         
         response_states = requests.get(self._API_STATES.format(country_code=country.code))
         states_json = response_states.json()["geonames"]
@@ -71,8 +77,31 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
         return states
 
     def create_state(self, state: State, country_name: str):
-        response_states = requests.get(self._API_STATES.format(code=country_name))
-        states = response_states.json()["geonames"]
+        country = self._filter_location(model=Country, column=Country.common_name, filter=country_name)
+
+        query_state = self._filter_location(model=State, column=State.name, filter=state)
+
+        if query_state:
+            return query_state
+
+        try:
+            response_states = requests.get(self._API_STATE.format(state_name=state, country_code=country.code))
+            state_json = response_states.json()["geonames"]
+
+            new_state = State(name=state_json[0]["name"], country_id=country.id)
+
+            self.session.add(new_state)
+            self.session.commit()
+            self.session.refresh(new_state)
+
+            return new_state
+
+        except Exception as e:
+            self.session.rollback()
+            raise IntegrityError(f"Error to save the state! !!!ERROR: {e}")
+        
+        finally:
+            self.session.close()
 
     def create_city(self, city: City):
         try:

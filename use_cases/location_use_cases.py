@@ -29,6 +29,15 @@ class LocationUseCases:
 
         if re.match(regex_name, city.name) is None:
             raise BadRequestError('Name must have at least 2 characters and start with a capital letter')
+        
+    def _validate_location_name_for_url(self, name: str):
+        chars_to_replace = ["-", "%", "&"]
+        for char in chars_to_replace:
+            if char in name:
+                correct_name = name.replace(char, ' ')
+                return correct_name
+            
+        return name
 
     def create_country(self):
         return self.location_repository.create_country()
@@ -41,18 +50,15 @@ class LocationUseCases:
         return self.location_repository.get_country_by_id(country_id=country_id)
     
     def get_states(self, country_name: str):
-        chars_to_replace = ["-", "%", "&"]
-        for char in chars_to_replace:
-            if char in country_name:
-                correct_name = country_name.replace(char, ' ')
-                break
+        correct_name = self._validate_location_name_for_url(name=country_name)
         
         country_name = correct_name
 
         return self.location_repository.get_states(country_name=country_name)
         
-    def create_state(self, state: State):
-        self.location_repository.create_state(state=state)
+    def create_state(self, state: State, country_name: str):
+        correct_country_name = self._validate_location_name_for_url(name=country_name)
+        return self.location_repository.create_state(state=state.name, country_name=correct_country_name)
     
     def create_city(self, city: City):
         self._validate_country_id(country_id=city.country_id)
