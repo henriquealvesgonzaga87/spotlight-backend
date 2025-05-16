@@ -65,7 +65,7 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
     
     def get_states(self, country_name: str):
         states = []
-        country = self._filter_location(model=Country, column=Country.common_name, filter=country_name)
+        country = self._filter_location(model=Country, column=Country.common_name, filter=country_name["country_name"])
         
         response_states = requests.get(self._API_STATES.format(country_code=country.code))
         states_json = response_states.json()["geonames"]
@@ -75,6 +75,14 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
             states.append(state_obj)
 
         return states
+    
+    def get_state_by_id(self, state_id: int):
+        state = self.session.query(State).filter(State.id == state_id).first()
+
+        if state is None:
+            raise NotFoundError("Not found with the given ID")
+        
+        return state
 
     def create_state(self, state: State, country_name: str):
         query_state = self.session.query(State).filter(State.name == state).first()

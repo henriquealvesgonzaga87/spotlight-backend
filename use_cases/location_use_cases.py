@@ -17,11 +17,11 @@ class LocationUseCases:
         self.location_repository = location_repository
         self._API_COUNTRIES = os.getenv("API_COUNTRIES")
 
-    def _validate_country_id(self, country_id: int):
-        if type(country_id) != int:
+    def _validate_id(self, id: int):
+        if type(id) != int:
             raise BadRequestError("Country ID must be an integer")
         
-        if country_id < 0:
+        if id < 0:
             raise BadRequestError("Country ID must be a positive integer")
         
     def _validate_city_name(self, city: City):
@@ -46,7 +46,7 @@ class LocationUseCases:
         return self.location_repository.get_countries()
     
     def get_country_by_id(self, country_id: int):
-        self._validate_country_id(country_id=country_id)
+        self._validate_id(id=country_id)
         return self.location_repository.get_country_by_id(country_id=country_id)
     
     def get_states(self, country_name: str):
@@ -55,13 +55,17 @@ class LocationUseCases:
         country_name = correct_name
 
         return self.location_repository.get_states(country_name=country_name)
+    
+    def get_state_by_id(self, state_id: int):
+        self._validate_id(id=state_id)
+        return self.location_repository.get_state_by_id(state_id=state_id)
         
     def create_state(self, state: State, country_name: str):
         correct_country_name = self._validate_location_name_for_url(name=country_name)
         return self.location_repository.create_state(state=state.name, country_name=correct_country_name)
     
     def create_city(self, city: City):
-        self._validate_country_id(country_id=city.country_id)
+        self._validate_id(id=city.country_id)
         self._validate_city_name(city=city)
 
         return self.location_repository.create_city(city=city)
