@@ -77,12 +77,12 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
         return states
 
     def create_state(self, state: State, country_name: str):
-        country = self._filter_location(model=Country, column=Country.common_name, filter=country_name)
-
-        query_state = self._filter_location(model=State, column=State.name, filter=state)
+        query_state = self.session.query(State).filter(State.name == state).first()
 
         if query_state:
             return query_state
+        
+        country = self._filter_location(model=Country, column=Country.common_name, filter=country_name)
 
         try:
             response_states = requests.get(self._API_STATE.format(state_name=state, country_code=country.code))
@@ -116,7 +116,7 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
             raise IntegrityError(f"Error to save the city. !!!ERROR: {e}")
 
         finally:
-            self.session.close()        
+            self.session.close()
 
     def create_location(self):
         try:
