@@ -96,7 +96,7 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
             response_states = requests.get(self._API_STATE.format(state_name=state, country_code=country.code))
             state_json = response_states.json()["geonames"]
 
-            new_state = State(name=state_json[0]["name"], country_id=country.id)
+            new_state = State(name=state_json[0]["name"], code=state_json[0]["adminCode1"], country_id=country.id)
 
             self.session.add(new_state)
             self.session.commit()

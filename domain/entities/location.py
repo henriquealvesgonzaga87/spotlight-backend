@@ -24,6 +24,7 @@ class State(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False, index=True)
+    code = Column(String, nullable=False, index=True)
     country_id = Column(Integer, ForeignKey("countries.id", ondelete="CASCADE"), nullable=False)
 
     country = relationship("Country", back_populates="states")

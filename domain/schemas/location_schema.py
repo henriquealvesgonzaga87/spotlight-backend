@@ -27,6 +27,7 @@ class StateSchema(BaseModel):
     
     id: int | None
     name: str
+    code: str
     country_id: int
 
 
