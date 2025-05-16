@@ -20,6 +20,7 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
         self._API_STATES = os.getenv("API_STATES")
         self._API_STATE = os.getenv("API_STATE")
         self._API_CITIES = os.getenv("API_CITIES")
+        self._API_CITY = os.getenv("API_CITY")
 
     def _filter_location(self, model, column, filter: str):
         query = self.session.query(model).filter(column == filter).first()
@@ -96,7 +97,11 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
             response_states = requests.get(self._API_STATE.format(state_name=state, country_code=country.code))
             state_json = response_states.json()["geonames"]
 
-            new_state = State(name=state_json[0]["name"], code=state_json[0]["adminCode1"], country_id=country.id)
+            new_state = State(
+                name=state_json[0]["name"], 
+                code=state_json[0]["adminCodes1"]["ISO3166_2"], 
+                admin_code=state_json[0]["adminCode1"],
+                country_id=country.id)
 
             self.session.add(new_state)
             self.session.commit()
@@ -111,13 +116,29 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
         finally:
             self.session.close()
 
-    def create_city(self, city: City):
-        try:
-            self.session.add(city)
-            self.session.commit()
-            self.session.refresh(city)
+    def create_city(self, country_name: str, state_name: str, city: City):
+        query_city = self.session.query(City).filter(City.name == city.name).first()
 
-            return city
+        if query_city:
+            return query_city
+        
+        country = self._filter_location(model=Country, column=Country.common_name, filter=country_name)
+        state = self._filter_location(model=State, column=State.name, filter=state_name)
+
+        try:
+            response_city = requests.get(self._API_CITY.format(city_name=city.name, country_code=country.code, state_code=state.admin_code))
+            city_json = response_city.json()["geonames"][0]
+
+            if len(city_json) == 0:
+                raise NotFoundError(f"{city.name} not found")
+            
+            new_city = City(name=city_json["name"], state_id=state.id)
+
+            self.session.add(new_city)
+            self.session.commit()
+            self.session.refresh(new_city)
+
+            return new_city
 
         except Exception as e:
             self.session.rollback()

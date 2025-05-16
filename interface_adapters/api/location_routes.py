@@ -75,13 +75,16 @@ def create_state(country_name: str, state_data: StateCreateSchema = Body(...), l
     return state_json
 
 
-@router.post("/location/city", status_code=status.HTTP_201_CREATED, response_model=CitySchema)
+@router.post("/location/city/{country_name}/{state_name}", status_code=status.HTTP_201_CREATED, response_model=CitySchema)
 @inject
-def create_city(city_data: CityCreateSchema, location_use_case: LocationUseCases = Depends(Provide[Container.location_use_cases])):
+def create_city(country_name: str, state_name: str, city_data: CityCreateSchema, location_use_case: LocationUseCases = Depends(Provide[Container.location_use_cases])):
     city = location_use_case.create_city(city=City(
         name=city_data.name,
-        country_id=city_data.country_id
-    ))
+        state_id=city_data.state_id
+        ),
+        country_name=country_name,
+        state_name=state_name
+    )
 
     city_json = jsonable_encoder(obj=city)
 

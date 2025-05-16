@@ -4,12 +4,12 @@ from pydantic import BaseModel, ConfigDict
 class CitySchema(BaseModel):
     id: int
     name: str
-    country_id: int
+    state_id: int
 
 
 class CityCreateSchema(BaseModel):
     name: str
-    country_id: int
+    state_id: int
 
 
 class CountryCreateSchema(BaseModel):
@@ -28,6 +28,7 @@ class StateSchema(BaseModel):
     id: int | None
     name: str
     code: str
+    admin_code: int
     country_id: int
 
 

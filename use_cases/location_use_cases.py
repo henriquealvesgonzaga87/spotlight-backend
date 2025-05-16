@@ -64,11 +64,11 @@ class LocationUseCases:
         correct_country_name = self._validate_location_name_for_url(name=country_name)
         return self.location_repository.create_state(state=state.name, country_name=correct_country_name)
     
-    def create_city(self, city: City):
-        self._validate_id(id=city.country_id)
-        self._validate_city_name(city=city)
+    def create_city(self, country_name: str, state_name: str, city: City):
+        correct_country_name = self._validate_location_name_for_url(name=country_name)
+        correct_state_name = self._validate_location_name_for_url(name=state_name)
 
-        return self.location_repository.create_city(city=city)
+        return self.location_repository.create_city(country_name=correct_country_name, state_name=correct_state_name, city=city)
     
     def create_location(self):
         return self.location_repository.create_location()
