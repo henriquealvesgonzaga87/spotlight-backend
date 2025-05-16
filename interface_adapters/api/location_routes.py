@@ -4,7 +4,7 @@ from dependency_injector.wiring import inject, Provide
 
 from containers.container import Container
 from domain.entities.location import City, Country, State
-from domain.schemas.location_schema import CityCreateSchema, CitySchema, CountryCreateSchema, CountrySchema, StateCreateSchema, StateSchema
+from domain.schemas.location_schema import CityCreateSchema, CitySchema, CountryCreateSchema, CountrySchema, GetCitiesSchema, StateCreateSchema, StateSchema
 from use_cases.location_use_cases import LocationUseCases
 
 
@@ -77,7 +77,7 @@ def create_state(country_name: str, state_data: StateCreateSchema = Body(...), l
 
 @router.post("/location/city/{country_name}/{state_name}", status_code=status.HTTP_201_CREATED, response_model=CitySchema)
 @inject
-def create_city(country_name: str, state_name: str, city_data: CityCreateSchema, location_use_case: LocationUseCases = Depends(Provide[Container.location_use_cases])):
+def create_city(country_name: str, state_name: str, city_data: CityCreateSchema = Body(...), location_use_case: LocationUseCases = Depends(Provide[Container.location_use_cases])):
     city = location_use_case.create_city(city=City(
         name=city_data.name,
         state_id=city_data.state_id
@@ -89,6 +89,19 @@ def create_city(country_name: str, state_name: str, city_data: CityCreateSchema,
     city_json = jsonable_encoder(obj=city)
 
     return city_json
+
+
+@router.get("/location/city", status_code=status.HTTP_200_OK, response_model=list[CitySchema])
+@inject
+def get_cities(get_cities_body: GetCitiesSchema = Body(...), location_use_case: LocationUseCases = Depends(Provide[Container.location_use_cases])):
+    cities = location_use_case.get_cities(
+        country_name=get_cities_body.country_name,
+        state_name=get_cities_body.state_name
+    )
+
+    cities_json = jsonable_encoder(cities)
+
+    return cities_json
 
 
 @router.post("/location", status_code=status.HTTP_201_CREATED)

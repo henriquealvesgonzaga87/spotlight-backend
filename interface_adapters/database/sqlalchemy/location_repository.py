@@ -21,6 +21,7 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
         self._API_STATE = os.getenv("API_STATE")
         self._API_CITIES = os.getenv("API_CITIES")
         self._API_CITY = os.getenv("API_CITY")
+        self._GEONAMEID = os.getenv("GEONAMEID")
 
     def _filter_location(self, model, column, filter: str):
         query = self.session.query(model).filter(column == filter).first()
@@ -146,6 +147,32 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
 
         finally:
             self.session.close()
+
+    def get_cities(self, country_name: str, state_name: str):
+        cities = []
+
+        country = self._filter_location(model=Country, column=Country.common_name, filter=country_name)
+        state = self.session.query(State).filter(State.name == state_name).first()
+
+        state_geo_name_id = requests.get(self._API_STATE.format(state_name=state_name, country_code=country.code))
+        state_geo_name_id_json = state_geo_name_id.json()["geonames"][0]["geonameId"]
+
+        response_city = requests.get(self._GEONAMEID.format(geo_name_id=state_geo_name_id_json))
+        response_city_json = response_city.json()["geonames"]
+
+        if state:
+            for city in response_city_json:
+                city_obj = City(id=None, name=city["name"], state_id=state.id)
+                cities.append(city_obj)
+
+            return cities
+        
+        if state is None:
+            for city in response_city_json:
+                city_obj = City(id=None, name=city["name"], state_id=None)
+                cities.append(city_obj)
+
+            return cities
 
     def create_location(self):
         try:

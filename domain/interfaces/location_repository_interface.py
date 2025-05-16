@@ -33,5 +33,9 @@ class LocationRepositoryInterface(ABC):
         pass
 
     @abstractmethod
+    async def get_cities(self, country_name: str, state_name: str):
+        pass
+
+    @abstractmethod
     async def create_location(self):
         pass

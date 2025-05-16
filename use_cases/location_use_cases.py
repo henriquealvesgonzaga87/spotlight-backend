@@ -70,5 +70,11 @@ class LocationUseCases:
 
         return self.location_repository.create_city(country_name=correct_country_name, state_name=correct_state_name, city=city)
     
+    def get_cities(self, country_name: str, state_name: str):
+        correct_country_name = self._validate_location_name_for_url(name=country_name)
+        correct_state_name = self._validate_location_name_for_url(name=state_name)
+
+        return self.location_repository.get_cities(country_name=correct_country_name, state_name=correct_state_name)
+    
     def create_location(self):
         return self.location_repository.create_location()
