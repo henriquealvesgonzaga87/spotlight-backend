@@ -1,7 +1,7 @@
 import os
+import requests
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
-import requests
 
 from domain.entities.location import City, Country, State
 from domain.exceptions.integrity_error import IntegrityError
@@ -168,6 +168,10 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
         state = self.session.query(State).filter(State.name == state_name).first()
 
         state_geo_name_id = requests.get(self._API_STATE.format(state_name=state_name, country_code=country.code))
+
+        if len(state_geo_name_id.json()["geonames"]) == 0:
+            raise NotFoundError("State not found")
+
         state_geo_name_id_json = state_geo_name_id.json()["geonames"][0]["geonameId"]
 
         response_city = requests.get(self._GEONAMEID.format(geo_name_id=state_geo_name_id_json))
