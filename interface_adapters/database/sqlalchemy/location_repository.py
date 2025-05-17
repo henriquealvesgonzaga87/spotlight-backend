@@ -141,18 +141,22 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
 
         try:
             response_city = requests.get(self._API_CITY.format(city_name=city.name, country_code=country.code, state_code=state.admin_code))
-            city_json = response_city.json()["geonames"][0]
+            city_json = response_city.json()["geonames"]
 
             if len(city_json) == 0:
                 raise NotFoundError(f"{city.name} not found")
             
-            new_city = City(name=city_json["name"], state_id=state.id)
+            new_city = City(name=city_json[0]["name"], state_id=state.id)
 
             self.session.add(new_city)
             self.session.commit()
             self.session.refresh(new_city)
 
             return new_city
+        
+        except NotFoundError as e:
+            self.session.rollback()
+            raise NotFoundError(e)
 
         except Exception as e:
             self.session.rollback()
