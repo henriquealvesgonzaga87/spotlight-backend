@@ -1,10 +1,8 @@
 import os
-import re
-import requests
 
 from dotenv import load_dotenv
 
-from domain.entities.location import City, Country, State
+from domain.entities.location import City, State
 from domain.exceptions.bad_request_error import BadRequestError
 from domain.interfaces.location_repository_interface import LocationRepositoryInterface
 
@@ -23,12 +21,6 @@ class LocationUseCases:
         
         if id < 0:
             raise BadRequestError("Country ID must be a positive integer")
-        
-    def _validate_city_name(self, city: City):
-        regex_name = r"^([A-Z][a-z]{2,}(?:\s[A-Z][a-z]{2,})*)$"
-
-        if re.match(regex_name, city.name) is None:
-            raise BadRequestError('Name must have at least 2 characters and start with a capital letter')
         
     def _validate_location_name_for_url(self, name: str):
         chars_to_replace = ["-", "%", "&"]
@@ -76,5 +68,6 @@ class LocationUseCases:
 
         return self.location_repository.get_cities(country_name=correct_country_name, state_name=correct_state_name)
     
-    def create_location(self):
-        return self.location_repository.create_location()
+    def get_city_by_id(self, city_id: int):
+        self._validate_id(id=city_id)
+        return self.location_repository.get_city_by_id(city_id=city_id)

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from domain.entities.location import City, Country, State
+from domain.entities.location import City, State
 
 
 class LocationRepositoryInterface(ABC):
@@ -37,5 +37,5 @@ class LocationRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def create_location(self):
+    async def get_city_by_id(self, city_id):
         pass

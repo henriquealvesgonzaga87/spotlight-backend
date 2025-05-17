@@ -3,8 +3,8 @@ from fastapi.encoders import jsonable_encoder
 from dependency_injector.wiring import inject, Provide
 
 from containers.container import Container
-from domain.entities.location import City, Country, State
-from domain.schemas.location_schema import CityCreateSchema, CitySchema, CountryCreateSchema, CountrySchema, GetCitiesSchema, StateCreateSchema, StateSchema
+from domain.entities.location import City, State
+from domain.schemas.location_schema import CityCreateSchema, CitySchema, CountrySchema, GetCitiesSchema, StateCreateSchema, StateSchema
 from use_cases.location_use_cases import LocationUseCases
 
 
@@ -104,9 +104,11 @@ def get_cities(get_cities_body: GetCitiesSchema = Body(...), location_use_case: 
     return cities_json
 
 
-@router.post("/location", status_code=status.HTTP_201_CREATED)
+@router.get("/location/city/{city_id}", status_code=status.HTTP_200_OK, response_model=CitySchema)
 @inject
-def create_location(location_use_cases: LocationUseCases = Depends(Provide[Container.location_use_cases])):
-    location_use_cases.create_location()
+def get_city_by_id(city_id: int, location_use_case: LocationUseCases = Depends(Provide[Container.location_use_cases])):
+    city = location_use_case.get_city_by_id(city_id=city_id)
 
-    return "seeded successfully"
+    city_json = jsonable_encoder(city)
+
+    return city_json

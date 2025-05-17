@@ -173,42 +173,11 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
                 cities.append(city_obj)
 
             return cities
-
-    def create_location(self):
-        try:
-            response = requests.get(self._API_COUNTRIES)
-            countries = response.json()["geonames"]
-
-            for country in countries:
-                country_obj = Country(common_name=country["countryName"], code=country["countryCode"])
-                self.session.add(country_obj)
-                self.session.commit()
-                self.session.refresh(country_obj)
-
-                # search country's states and regions
-                response_states = requests.get(self._API_STATES.format(code=country["countryCode"]))
-                states = response_states.json()["geonames"]
-
-                for state in states:
-                    state_obj = State(name=state["name"], country_id=country_obj.id)
-                    self.session.add(state_obj)
-                    self.session.commit()
-                    self.session.refresh(state_obj)
-
-                    # search cities inside the states
-                    response_cities = requests.get(self._API_CITIES.format(code=country["countryCode"]))
-                    cities = response_cities.json()["geonames"]
-
-                    for city in cities:
-                        city_obj = City(name=city["name"], state_id=state_obj.id)
-                        self.session.add(city_obj)
-                        self.session.commit()
-                        self.session.refresh(city_obj)
         
-        except Exception as e:
-            self.session.rollback()
-            raise IntegrityError(f"!!!ERROR: {e}")
+    def get_city_by_id(self, city_id: int):
+        query_city = self.session.query(City).filter(City.id == city_id).first()
+
+        if query_city is None:
+            raise NotFoundError("Not found with the given parameter")
         
-        finally:
-            self.session.close()
-    
+        return query_city
