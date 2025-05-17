@@ -93,21 +93,24 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
         return state
 
     def create_state(self, state: State, country_name: str):
-        query_state = self.session.query(State).filter(State.name == state).first()
+        query_state = self.session.query(State).filter(State.name == state.name).first()
 
         if query_state:
             return query_state
         
-        country = self._filter_location(model=Country, column=Country.common_name, filter=country_name)
+        country = self.get_country_by_id(country_id=state.country_id)
 
         try:
-            response_states = requests.get(self._API_STATE.format(state_name=state, country_code=country.code))
-            state_json = response_states.json()["geonames"]
+            response_states = requests.get(self._API_STATE.format(state_name=state.name, country_code=country.code))
+            state_json = response_states.json()["geonames"][0]
+
+            if len(state_json) == 0:
+                raise NotFoundError(f"{state.name} not found for the country {country_name}")
 
             new_state = State(
-                name=state_json[0]["name"], 
-                code=state_json[0]["adminCodes1"]["ISO3166_2"], 
-                admin_code=state_json[0]["adminCode1"],
+                name=state_json["name"], 
+                code=state_json["adminCodes1"]["ISO3166_2"], 
+                admin_code=state_json["adminCode1"],
                 country_id=country.id)
 
             self.session.add(new_state)
@@ -115,8 +118,12 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
             self.session.refresh(new_state)
 
             return new_state
+        
+        except NotFoundError as e:
+            self.session.rollback()
+            raise NotFoundError(e)
 
-        except Exception as e:
+        except IntegrityError as e:
             self.session.rollback()
             raise IntegrityError(f"Error to save the state! !!!ERROR: {e}")
         

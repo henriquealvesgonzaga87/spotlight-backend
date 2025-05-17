@@ -13,7 +13,6 @@ load_dotenv()
 class LocationUseCases:
     def __init__(self, location_repository: LocationRepositoryInterface):
         self.location_repository = location_repository
-        self._API_COUNTRIES = os.getenv("API_COUNTRIES")
 
     def _validate_id(self, id: int):
         if type(id) != int:
@@ -54,7 +53,7 @@ class LocationUseCases:
         
     def create_state(self, state: State, country_name: str):
         correct_country_name = self._validate_location_name_for_url(name=country_name)
-        return self.location_repository.create_state(state=state.name, country_name=correct_country_name)
+        return self.location_repository.create_state(state=state, country_name=correct_country_name)
     
     def create_city(self, country_name: str, state_name: str, city: City):
         correct_country_name = self._validate_location_name_for_url(name=country_name)
