@@ -73,7 +73,13 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
         states_json = response_states.json()["geonames"]
 
         for state in states_json:
-            state_obj = State(id=None, name=state["name"], country_id=country.id)
+            state_obj = State(
+                id=None, 
+                name=state["name"],
+                code=state["adminCodes1"]["ISO3166_2"],
+                admin_code=state["adminCode1"],
+                country_id=country.id
+            )
             states.append(state_obj)
 
         return states
