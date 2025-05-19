@@ -11,7 +11,6 @@ class CitySchema(BaseModel):
 
 class CityCreateSchema(BaseModel):
     name: str
-    state_id: int
 
 
 class GetCitiesSchema(BaseModel):

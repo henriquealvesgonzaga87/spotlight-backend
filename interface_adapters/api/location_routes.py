@@ -79,7 +79,6 @@ def create_state(state_data: StateCreateSchema = Body(...), location_use_cases: 
 def create_city(country_name: str, state_name: str, city_data: CityCreateSchema = Body(...), location_use_case: LocationUseCases = Depends(Provide[Container.location_use_cases])):
     city = location_use_case.create_city(city=City(
         name=city_data.name,
-        state_id=city_data.state_id
         ),
         country_name=country_name,
         state_name=state_name
