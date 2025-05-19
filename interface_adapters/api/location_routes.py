@@ -59,15 +59,14 @@ def get_state_by_id(state_id: int, location_use_cases: LocationUseCases = Depend
     return state_json
 
 
-@router.post("/location/state/{country_name}", status_code=status.HTTP_201_CREATED, response_model=StateSchema)
+@router.post("/location/state/", status_code=status.HTTP_201_CREATED, response_model=StateSchema)
 @inject
-def create_state(country_name: str, state_data: StateCreateSchema = Body(...), location_use_cases: LocationUseCases = Depends(Provide[Container.location_use_cases])):
+def create_state(state_data: StateCreateSchema = Body(...), location_use_cases: LocationUseCases = Depends(Provide[Container.location_use_cases])):
     state = location_use_cases.create_state(
         state=State(
             name=state_data.name,
             country_id=state_data.country_id
-        ),
-        country_name=country_name,
+        )
     )
 
     state_json = jsonable_encoder(state)

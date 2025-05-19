@@ -92,7 +92,7 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
         
         return state
 
-    def create_state(self, state: State, country_name: str):
+    def create_state(self, state: State):
         query_state = self.session.query(State).filter(State.name == state.name).first()
 
         if query_state:
@@ -105,7 +105,7 @@ class SQLAlchemyLocationRepository(LocationRepositoryInterface):
             state_json = response_states.json()["geonames"][0]
 
             if len(state_json) == 0:
-                raise NotFoundError(f"{state.name} not found for the country {country_name}")
+                raise NotFoundError(f"{state.name} not found")
 
             new_state = State(
                 name=state_json["name"], 
