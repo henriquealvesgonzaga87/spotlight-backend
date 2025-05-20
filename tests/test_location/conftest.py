@@ -7,6 +7,7 @@ from unittest.mock import Mock
 
 from domain.entities.location import Country
 from domain.exceptions.integrity_error import IntegrityError
+from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.location_repository_interface import LocationRepositoryInterface
 from interface_adapters.database.sqlalchemy.location_repository import SQLAlchemyLocationRepository
 from use_cases.location_use_cases import LocationUseCases
@@ -41,7 +42,7 @@ def api_geonames_connection_string_failure():
 
 
 @pytest.fixture
-def mock_location_repo_success(mock_location_repo_interface, countries):
+def mock_location_repo_success(mock_location_repo_interface, countries, country):
     location_repo = mock_location_repo_interface
     location_repo.create_country.return_value = countries
 
@@ -52,6 +53,7 @@ def mock_location_repo_success(mock_location_repo_interface, countries):
 def mock_location_repo_failure(mock_session):
     location_repo = SQLAlchemyLocationRepository(session=mock_session)
     location_repo.create_country = Mock(side_effect=IntegrityError("!!!ERROR"))
+    location_repo._filter_location = Mock(side_effect=NotFoundError("ERROR"))
 
     return location_repo
 
