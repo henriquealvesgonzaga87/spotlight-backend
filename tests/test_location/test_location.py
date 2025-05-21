@@ -83,3 +83,17 @@ class TestLocation:
                 column=Country.common_name,
                 filter="Test"
             )
+
+    @pytest.mark.asyncio
+    async def test_get_countries_success(self, mock_location_repo_success):
+        countries = await mock_location_repo_success.get_countries()
+
+        assert len(countries) != 0
+        assert isinstance(countries[0], Country)
+        assert isinstance(countries[1], Country)
+        assert isinstance(countries[2], Country)
+
+    @pytest.mark.asyncio
+    async def test_get_countries_failure(self, mock_location_repo_failure):
+        with pytest.raises(NotFoundError, match="Not found"):
+            await mock_location_repo_failure.get_countries()
