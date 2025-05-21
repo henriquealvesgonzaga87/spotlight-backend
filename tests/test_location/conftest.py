@@ -42,10 +42,11 @@ def api_geonames_connection_string_failure():
 
 
 @pytest.fixture
-def mock_location_repo_success(mock_location_repo_interface, countries):
+def mock_location_repo_success(mock_location_repo_interface, countries, country):
     location_repo = mock_location_repo_interface
     location_repo.create_country.return_value = countries
     location_repo.get_countries.return_value = countries
+    location_repo.get_country_by_id.return_value = country
 
     return location_repo
 
@@ -56,6 +57,7 @@ def mock_location_repo_failure(mock_session):
     location_repo.create_country = Mock(side_effect=IntegrityError("!!!ERROR"))
     location_repo._filter_location = Mock(side_effect=NotFoundError("ERROR"))
     location_repo.get_countries = Mock(side_effect=NotFoundError("Not found"))
+    location_repo.get_country_by_id = Mock(side_effect=NotFoundError("Not found"))
 
     return location_repo
 
