@@ -210,3 +210,16 @@ class TestLocation:
                 country_name=country_name,
                 state_name=state_name
             )
+
+    @pytest.mark.asyncio
+    async def test_get_city_by_id_success(self, mock_location_repo_success, city_id=0):
+        city = await mock_location_repo_success.get_city_by_id(city_id=city_id)
+
+        assert city is not None
+        assert city.id == city_id
+        assert isinstance(city, City)
+
+    @pytest.mark.asyncio
+    async def test_get_city_by_id_failure(self, mock_location_repo_failure, city_id=99):
+        with pytest.raises(NotFoundError, match="Not found"):
+            await mock_location_repo_failure.get_city_by_id(city_id=city_id)
