@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 from unittest.mock import Mock
 
-from domain.entities.location import Country
+from domain.entities.location import Country, State
 from domain.exceptions.integrity_error import IntegrityError
 from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.location_repository_interface import LocationRepositoryInterface
@@ -42,11 +42,17 @@ def api_geonames_connection_string_failure():
 
 
 @pytest.fixture
-def mock_location_repo_success(mock_location_repo_interface, countries, country):
+def mock_location_repo_success(
+    mock_location_repo_interface, 
+    countries, 
+    country,
+    states
+    ):
     location_repo = mock_location_repo_interface
     location_repo.create_country.return_value = countries
     location_repo.get_countries.return_value = countries
     location_repo.get_country_by_id.return_value = country
+    location_repo.get_states.return_value = states
 
     return location_repo
 
@@ -58,6 +64,7 @@ def mock_location_repo_failure(mock_session):
     location_repo._filter_location = Mock(side_effect=NotFoundError("ERROR"))
     location_repo.get_countries = Mock(side_effect=NotFoundError("Not found"))
     location_repo.get_country_by_id = Mock(side_effect=NotFoundError("Not found"))
+    location_repo.get_states = Mock(side_effect=NotFoundError("Not found"))
 
     return location_repo
 
@@ -89,4 +96,42 @@ def country():
         id=0,
         common_name="Andorra",
         code="AD"
+    )
+
+
+@pytest.fixture
+def states():
+    return [
+        State(
+            id=0,
+            name="Escaldes-Engordany",
+            code="08",
+            admin_code=8,
+            country_id=1
+        ),
+        State(
+            id=1,
+            name="Sant Julià de Loria",
+            code="06",
+            admin_code=6,
+            country_id=1
+        ),
+        State(
+            id=2,
+            name="Ordino",
+            code="05",
+            admin_code=5,
+            country_id=1
+        )
+    ]
+
+
+@pytest.fixture
+def state():
+    return State(
+        id=0,
+        name="Escaldes-Engordany",
+        code="08",
+        admin_code=8,
+        country_id=1
     )
