@@ -46,13 +46,15 @@ def mock_location_repo_success(
     mock_location_repo_interface, 
     countries, 
     country,
-    states
+    states,
+    state
     ):
     location_repo = mock_location_repo_interface
     location_repo.create_country.return_value = countries
     location_repo.get_countries.return_value = countries
     location_repo.get_country_by_id.return_value = country
     location_repo.get_states.return_value = states
+    location_repo.get_state_by_id.return_value = state
 
     return location_repo
 
@@ -65,6 +67,7 @@ def mock_location_repo_failure(mock_session):
     location_repo.get_countries = Mock(side_effect=NotFoundError("Not found"))
     location_repo.get_country_by_id = Mock(side_effect=NotFoundError("Not found"))
     location_repo.get_states = Mock(side_effect=NotFoundError("Not found"))
+    location_repo.get_state_by_id = Mock(side_effect=NotFoundError("Not found"))
 
     return location_repo
 
