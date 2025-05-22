@@ -9,6 +9,7 @@ from domain.entities.location import Country, State
 from domain.exceptions.integrity_error import IntegrityError
 from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.location_repository_interface import LocationRepositoryInterface
+from domain.schemas.location_schema import StateCreateSchema
 from interface_adapters.database.sqlalchemy.location_repository import SQLAlchemyLocationRepository
 from use_cases.location_use_cases import LocationUseCases
 
@@ -55,6 +56,7 @@ def mock_location_repo_success(
     location_repo.get_country_by_id.return_value = country
     location_repo.get_states.return_value = states
     location_repo.get_state_by_id.return_value = state
+    location_repo.create_state.return_value = state
 
     return location_repo
 
@@ -68,6 +70,7 @@ def mock_location_repo_failure(mock_session):
     location_repo.get_country_by_id = Mock(side_effect=NotFoundError("Not found"))
     location_repo.get_states = Mock(side_effect=NotFoundError("Not found"))
     location_repo.get_state_by_id = Mock(side_effect=NotFoundError("Not found"))
+    location_repo.create_state = Mock(side_effect=IntegrityError("Error"))
 
     return location_repo
 
@@ -136,5 +139,13 @@ def state():
         name="Escaldes-Engordany",
         code="08",
         admin_code=8,
+        country_id=1
+    )
+
+
+@pytest.fixture
+def create_state_data():
+    return StateCreateSchema(
+        name="Escaldes-Engordany",
         country_id=1
     )
