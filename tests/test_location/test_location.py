@@ -148,3 +148,35 @@ class TestLocation:
     async def test_create_state_failure(self, mock_location_repo_failure, create_state_data):
         with pytest.raises(IntegrityError, match="Error"):
             await mock_location_repo_failure.create_state(state=create_state_data)
+
+    @pytest.mark.asyncio
+    async def test_create_city_success(
+        self, 
+        mock_location_repo_success,
+        create_city_data,
+        state_name="Escaldes-Engordany",
+        country_name="Andorra"
+    ):
+        new_city = await mock_location_repo_success.create_city(
+            country_name=country_name,
+            state_name=state_name,
+            city=create_city_data
+        )
+
+        assert new_city is not None
+        assert new_city.name == create_city_data.name
+
+    @pytest.mark.asyncio
+    async def test_create_city_failure(
+        self,
+        mock_location_repo_failure,
+        create_city_data,
+        state_name="Escaldes-Engordany",
+        country_name="Andorra"
+    ):
+        with pytest.raises(IntegrityError, match="Error"):
+            await mock_location_repo_failure.create_city(
+                country_name=country_name,
+                state_name=state_name,
+                city=create_city_data
+            )

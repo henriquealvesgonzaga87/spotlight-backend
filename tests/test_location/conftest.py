@@ -5,11 +5,11 @@ from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 from unittest.mock import Mock
 
-from domain.entities.location import Country, State
+from domain.entities.location import City, Country, State
 from domain.exceptions.integrity_error import IntegrityError
 from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.location_repository_interface import LocationRepositoryInterface
-from domain.schemas.location_schema import StateCreateSchema
+from domain.schemas.location_schema import CityCreateSchema, StateCreateSchema
 from interface_adapters.database.sqlalchemy.location_repository import SQLAlchemyLocationRepository
 from use_cases.location_use_cases import LocationUseCases
 
@@ -48,7 +48,8 @@ def mock_location_repo_success(
     countries, 
     country,
     states,
-    state
+    state,
+    city
     ):
     location_repo = mock_location_repo_interface
     location_repo.create_country.return_value = countries
@@ -57,6 +58,7 @@ def mock_location_repo_success(
     location_repo.get_states.return_value = states
     location_repo.get_state_by_id.return_value = state
     location_repo.create_state.return_value = state
+    location_repo.create_city.return_value = city
 
     return location_repo
 
@@ -71,6 +73,7 @@ def mock_location_repo_failure(mock_session):
     location_repo.get_states = Mock(side_effect=NotFoundError("Not found"))
     location_repo.get_state_by_id = Mock(side_effect=NotFoundError("Not found"))
     location_repo.create_state = Mock(side_effect=IntegrityError("Error"))
+    location_repo.create_city = Mock(side_effect=IntegrityError("Error"))
 
     return location_repo
 
@@ -144,8 +147,45 @@ def state():
 
 
 @pytest.fixture
+def cities():
+    return [
+        City(
+            id= 0,
+            name="Les Escaldes",
+            state_id=1
+        ),
+        City(
+            id= 1,
+            name="Els Vilars",
+            state_id=1
+        ),
+        City(
+            id= 2,
+            name="Engordany",
+            state_id=1
+        )
+    ]
+
+
+@pytest.fixture
+def city():
+    return City(
+        id= 0,
+        name="Les Escaldes",
+        state_id=1
+    )
+
+
+@pytest.fixture
 def create_state_data():
     return StateCreateSchema(
         name="Escaldes-Engordany",
         country_id=1
+    )
+
+
+@pytest.fixture
+def create_city_data():
+    return CityCreateSchema(
+        name="Les Escaldes"
     )
