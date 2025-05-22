@@ -4,7 +4,7 @@ import requests
 
 from fastapi.encoders import jsonable_encoder
 
-from domain.entities.location import Country, State
+from domain.entities.location import City, Country, State
 from domain.exceptions.integrity_error import IntegrityError
 from domain.exceptions.not_found_error import NotFoundError
 from interface_adapters.database.sqlalchemy.location_repository import SQLAlchemyLocationRepository
@@ -179,4 +179,34 @@ class TestLocation:
                 country_name=country_name,
                 state_name=state_name,
                 city=create_city_data
+            )
+
+    @pytest.mark.asyncio
+    async def test_get_cities_success(
+        self,
+        mock_location_repo_success,
+        state_name="Escaldes-Engordany", 
+        country_name="Andorra"
+    ):
+        cities = await mock_location_repo_success.get_cities(
+            country_name=country_name,
+            state_name=state_name
+        )
+
+        assert len(cities) != 0
+        assert isinstance(cities[0], City)
+        assert isinstance(cities[1], City)
+        assert isinstance(cities[2], City)
+
+    @pytest.mark.asyncio
+    async def test_get_cities_failure(
+        self, 
+        mock_location_repo_failure,
+        state_name="Escaldes-Engordany", 
+        country_name="Andorra"
+    ):
+        with pytest.raises(NotFoundError, match="Not found"):
+            await mock_location_repo_failure.get_cities(
+                country_name=country_name,
+                state_name=state_name
             )
