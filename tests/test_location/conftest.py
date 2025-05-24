@@ -33,6 +33,13 @@ def mock_location_use_cases():
 
 
 @pytest.fixture
+def mock_location_repository_for_route_tests():
+    location_repo = Mock()
+
+    return location_repo
+
+
+@pytest.fixture
 def api_geonames_connection_string_success():
     return os.getenv("API_COUNTRIES")
 
