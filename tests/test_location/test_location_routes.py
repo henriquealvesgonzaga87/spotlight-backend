@@ -157,3 +157,33 @@ class TestLocationRoutes:
         
         assert response.status_code == 404
         assert response.content.decode() == "Not Found"
+
+    @pytest.mark.asyncio
+    async def test_get_cities_route_success(
+        self,
+        mock_location_use_cases,
+        cities,
+        country_name="Andorra",
+        state_name="Escaldes-Engordany"
+    ):
+        mock_location_use_cases.get_cities = Mock(return_value=cities)
+
+        response = client.get(f"/location/city/{country_name}/{state_name}")
+
+        assert response.status_code == 200
+        assert response.json() == [
+            {'id': 0, 'name': 'Les Escaldes', 'state_id': 1}, 
+            {'id': 1, 'name': 'Els Vilars', 'state_id': 1}, 
+            {'id': 2, 'name': 'Engordany', 'state_id': 1}
+        ]
+
+    @pytest.mark.asyncio
+    async def test_get_cities_route_failure(
+        self,
+        country_name="Andorra",
+        state_name="Escaldes-Engordany"
+    ):
+        response = client.get(f"/location/cit/{country_name}/{state_name}")
+
+        assert response.status_code == 404
+        assert response.content.decode() == "Not Found"

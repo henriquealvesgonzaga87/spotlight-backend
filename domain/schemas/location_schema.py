@@ -13,11 +13,6 @@ class CityCreateSchema(BaseModel):
     name: str
 
 
-class GetCitiesSchema(BaseModel):
-    country_name: str
-    state_name: str
-
-
 class CountryCreateSchema(BaseModel):
     common_name: str
 
