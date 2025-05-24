@@ -31,3 +31,23 @@ class TestLocationRoutes:
 
         assert response.status_code == 404
         assert response.content.decode("utf-8") == "Not Found"
+
+    @pytest.mark.asyncio
+    async def test_get_countries_success(self, mock_location_use_cases, countries):
+        mock_location_use_cases.get_countries = Mock(return_value=countries)
+
+        response = client.get("/location/country")
+
+        assert response.status_code == 200
+        assert response.json() == [
+            {'id': 0, 'common_name': 'Andorra', 'code': 'AD'}, 
+            {'id': 1, 'common_name': 'United Arab Emirates', 'code': 'AE'}, 
+            {'id': 2, 'common_name': 'Afghanistan', 'code': 'AF'}
+        ]
+
+    @pytest.mark.asyncio
+    async def test_get_countries_failure(self):
+        response = client.get("location/countr")
+
+        assert response.status_code == 404
+        assert response.content.decode("utf-8") == "Not Found"
