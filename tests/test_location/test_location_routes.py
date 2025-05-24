@@ -73,7 +73,7 @@ class TestLocationRoutes:
     async def test_get_states_success(self, mock_location_use_cases, states):
         mock_location_use_cases.get_states = Mock(return_value=states)
 
-        response = client.get("/location/state/Andorra")
+        response = client.get("/location/country/state/Andorra")
 
         assert response.status_code == 200
         assert response.json() == [
