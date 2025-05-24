@@ -88,3 +88,20 @@ class TestLocationRoutes:
 
         assert response.status_code == 404
         assert response.content.decode() == "Not Found"
+
+    @pytest.mark.asyncio
+    async def test_get_state_by_id_success(self, mock_location_use_cases, state, state_id=0):
+        mock_location_use_cases.get_state_by_id = Mock(return_value=state)
+
+        response = client.get(f"/location/state/{state_id}")
+
+        assert response.status_code == 200
+        assert response.json() == {'id': 0, 'name': 'Escaldes-Engordany', 'code': '08', 'admin_code': 8, 'country_id': 1}
+        assert response.json()["id"] == state_id
+
+    @pytest.mark.asyncio
+    async def test_get_state_by_id_failure(self):
+        response = client.get("/location/stat/99")
+
+        assert response.status_code == 404
+        assert response.content.decode() == "Not Found"
