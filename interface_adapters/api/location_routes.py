@@ -39,9 +39,9 @@ def get_country_by_id(country_id: int, location_use_cases: LocationUseCases = De
     return country_json
 
 
-@router.get("/location/state/", status_code=status.HTTP_200_OK, response_model=list[StateSchema])
+@router.get("/location/state/{country_name}", status_code=status.HTTP_200_OK, response_model=list[StateSchema])
 @inject
-def get_states(country_name = Body(...), location_use_cases: LocationUseCases = Depends(Provide[Container.location_use_cases])):
+def get_states(country_name: str, location_use_cases: LocationUseCases = Depends(Provide[Container.location_use_cases])):
     states = location_use_cases.get_states(country_name=country_name)
 
     states_json = jsonable_encoder(states)

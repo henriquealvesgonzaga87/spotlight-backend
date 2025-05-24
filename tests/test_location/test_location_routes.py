@@ -1,4 +1,5 @@
 import pytest
+import json
 
 from unittest.mock import Mock
 from fastapi.testclient import TestClient
@@ -67,3 +68,23 @@ class TestLocationRoutes:
 
         assert response.status_code == 404
         assert response.content.decode("utf-8") == "Not Found"
+
+    @pytest.mark.asyncio
+    async def test_get_states_success(self, mock_location_use_cases, states):
+        mock_location_use_cases.get_states = Mock(return_value=states)
+
+        response = client.get("/location/state/Andorra")
+
+        assert response.status_code == 200
+        assert response.json() == [
+            {'id': 0, 'name': 'Escaldes-Engordany', 'code': '08', 'admin_code': 8, 'country_id': 1}, 
+            {'id': 1, 'name': 'Sant Julià de Loria', 'code': '06', 'admin_code': 6, 'country_id': 1}, 
+            {'id': 2, 'name': 'Ordino', 'code': '05', 'admin_code': 5, 'country_id': 1}
+        ]
+
+    @pytest.mark.asyncio
+    async def test_get_states_failure(self):
+        response = client.get("/location/stat/Andorra")
+
+        assert response.status_code == 404
+        assert response.content.decode() == "Not Found"
