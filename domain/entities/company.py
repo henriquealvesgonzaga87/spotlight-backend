@@ -1,9 +1,8 @@
 from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_utils import URLType
+from sqlalchemy.orm import relationship
 
-
-Base = declarative_base()
+from domain.entities.base import Base
 
 
 class Company(Base):
@@ -13,6 +12,8 @@ class Company(Base):
     link = Column(URLType, nullable=True)
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=True)
+
+    job = relationship("Job", back_populates="company", cascade="all, delete-orphan")
 
     def __str__(self):
         return f"{self.__class__.__name__}: {', '.join([f'{chave}={valor}' for chave, valor in self.__dict__.items()])}"

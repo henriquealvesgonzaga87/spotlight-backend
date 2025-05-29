@@ -2,13 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Date, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import URLType
 
-from sqlalchemy.ext.declarative import declarative_base
-
-from domain.entities.application_stage import ApplicationStage
-from domain.entities.location import City, Country, State
-
-
-Base = declarative_base()
+from domain.entities.base import Base
 
 
 class Job(Base):
@@ -19,15 +13,19 @@ class Job(Base):
     link = Column(URLType, nullable=True)
     application_date = Column(Date, nullable=True)
     application_stage_id = Column(Integer, ForeignKey(
-        column=ApplicationStage.id,
+        column="applications_stage.id",
         ondelete="CASCADE",
         onupdate="CASCADE"
     ), nullable=False)
     outcome = Column(String, nullable=True)
-    country_id = Column(Integer, ForeignKey(Country.id, ondelete="CASCADE"), nullable=False)
-    state_id = Column(Integer, ForeignKey(State.id, ondelete="CASCADE"), nullable=False)
-    city_id = Column(Integer, ForeignKey(City.id, ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"), nullable=False)
+    company_id = Column(Integer, ForeignKey("companies.id", ondelete="CASCADE", onupdate="CASCADE"), nullable=False)
+    country_id = Column(Integer, ForeignKey("countries.id", ondelete="CASCADE"), nullable=False)
+    state_id = Column(Integer, ForeignKey("states.id", ondelete="CASCADE"), nullable=False)
+    city_id = Column(Integer, ForeignKey("cities.id", ondelete="CASCADE"), nullable=False)
 
+    user = relationship("User", back_populates="job")
+    company = relationship("Company", back_populates="job")
     application_stage = relationship("ApplicationStage", back_populates="job")
     country = relationship("Country", back_populates="job")
     state = relationship("State", back_populates="job")
@@ -38,4 +36,3 @@ class Job(Base):
 
     def __str__(self):
         return f"{self.__class__.__name__}: {', '.join([f'{chave}={valor}' for chave, valor in self.__dict__.items()])}"
-    
