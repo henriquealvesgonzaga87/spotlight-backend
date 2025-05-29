@@ -3,6 +3,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy_utils import URLType
 
 from sqlalchemy.ext.declarative import declarative_base
+from .location import Country, State, City
+from .application_stage import ApplicationStage
 
 
 Base = declarative_base()

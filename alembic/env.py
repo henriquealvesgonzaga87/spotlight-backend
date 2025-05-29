@@ -30,13 +30,12 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 
-
 target_metadata = [
     UserBase.metadata,
     CompanyBase.metadata,
     LocationBase.metadata,
     ApplicationStageBase.metadata,
-    #JobBase.metadata
+    JobBase.metadata
 ]
 
 # other values from the config, defined by the needs of env.py,
