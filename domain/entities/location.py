@@ -46,4 +46,4 @@ class City(Base):
     state_id = Column(Integer, ForeignKey("states.id", ondelete="CASCADE"), nullable=False)
 
     state = relationship("State", back_populates="cities")
-    job = relationship("Job", back_populates="cities", cascade="all, delete-orphan")
+    job = relationship("Job", back_populates="city", cascade="all, delete-orphan")
