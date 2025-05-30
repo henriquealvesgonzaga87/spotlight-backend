@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from domain.entities.application_stage import ApplicationStage
 from domain.exceptions.integrity_error import IntegrityError
+from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.application_stage_repository_interface import ApplicationStageRepositoryInterface
 
 
@@ -27,3 +28,11 @@ class SQLAlchemyApplicationStageRepository(ApplicationStageRepositoryInterface):
         
         finally:
             self.session.close()
+
+    def get_all_application_stage(self):
+        application_stage = self.session.query(ApplicationStage).all()
+
+        if len(application_stage) == 0:
+            raise NotFoundError("No Application stage registered")
+        
+        return application_stage

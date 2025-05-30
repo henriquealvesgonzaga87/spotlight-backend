@@ -7,3 +7,7 @@ class ApplicationStageRepositoryInterface(ABC):
     @abstractmethod
     async def create_application_stage(self, application_stage: ApplicationStage):
         pass
+
+    @abstractmethod
+    async def get_all_application_stage(self):
+        pass

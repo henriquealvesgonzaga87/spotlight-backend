@@ -28,3 +28,15 @@ def create_application_stage(
     application_stage_json = jsonable_encoder(application_stage)
 
     return application_stage_json
+
+@router.get("/application_stage", status_code=status.HTTP_200_OK, response_model=list[ApplicationStageSchema])
+@inject
+def get_all_application_stage(
+    application_stage_use_cases: ApplicationStageUseCases = Depends(
+        Provide[Container.application_stage_use_cases]
+    )
+):
+    applications_stage = application_stage_use_cases.get_all_application_stage()
+    applications_stage_json = jsonable_encoder(applications_stage)
+
+    return applications_stage_json

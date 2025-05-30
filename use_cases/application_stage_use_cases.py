@@ -22,3 +22,6 @@ class ApplicationStageUseCases:
         return self.application_stage_repository.create_application_stage(
             application_stage=application_stage
         )
+    
+    def get_all_application_stage(self):
+        return self.application_stage_repository.get_all_application_stage()
