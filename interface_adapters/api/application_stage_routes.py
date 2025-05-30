@@ -29,6 +29,7 @@ def create_application_stage(
 
     return application_stage_json
 
+
 @router.get("/application_stage", status_code=status.HTTP_200_OK, response_model=list[ApplicationStageSchema])
 @inject
 def get_all_application_stage(
@@ -40,3 +41,19 @@ def get_all_application_stage(
     applications_stage_json = jsonable_encoder(applications_stage)
 
     return applications_stage_json
+
+
+@router.get("/application_stage/{application_stage_id}", status_code=status.HTTP_200_OK, response_model=ApplicationStageSchema)
+@inject
+def get_application_stage_by_id(
+    application_stage_id: int,
+    application_stage_use_cases: ApplicationStageUseCases = Depends(
+        Provide[Container.application_stage_use_cases]
+    )
+):
+    application_stage = application_stage_use_cases.get_application_stage_by_id(
+        application_stage_id=application_stage_id
+    )
+    application_stage_json = jsonable_encoder(application_stage)
+
+    return application_stage_json
