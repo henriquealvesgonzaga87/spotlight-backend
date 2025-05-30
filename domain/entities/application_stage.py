@@ -8,7 +8,7 @@ class ApplicationStage(Base):
     __tablename__ = "applications_stage"
 
     id = Column(Integer, primary_key=True, autoincrement=True, index=True)
-    application_stage = Column(String, nullable=False, index=True)
+    application_stage = Column(String, nullable=False, index=True, unique=True)
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=True)
 
