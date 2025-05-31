@@ -66,3 +66,20 @@ class SQLAlchemyApplicationStageRepository(ApplicationStageRepositoryInterface):
         
         finally:
             self.session.close()
+
+    def delete_application_stage(self, application_stage_id: int):
+        try:
+            query_application_stage = self.get_application_stage_by_id(
+                application_stage_id=application_stage_id
+            )
+
+            self.session.delete(query_application_stage)
+            self.session.commit()
+
+            return query_application_stage
+        
+        except NotFoundError as e:
+            raise NotFoundError("Application stage not found with the given ID")
+        
+        finally:
+            self.session.close()

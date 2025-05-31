@@ -45,3 +45,9 @@ class ApplicationStageUseCases:
             application_stage=application_stage,
             application_stage_id=application_stage_id
         )
+    
+    def delete_application_stage(self, application_stage_id: int):
+        self._validate_id(id=application_stage_id)
+        return self.application_stage_repository.delete_application_stage(
+            application_stage_id=application_stage_id
+        )

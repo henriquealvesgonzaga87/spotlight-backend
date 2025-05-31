@@ -78,3 +78,18 @@ def update_application_state(
     application_stage_json = jsonable_encoder(application_stage)
 
     return application_stage_json
+
+
+@router.delete("/application_stage/{application_stage_id}", status_code=status.HTTP_204_NO_CONTENT)
+@inject
+def delete_application_stage(
+    application_stage_id: int,
+    application_stage_use_cases: ApplicationStageUseCases = Depends(
+        Provide[Container.application_stage_use_cases]
+    )
+):
+    application_stage = application_stage_use_cases.delete_application_stage(
+        application_stage_id=application_stage_id
+    )
+
+    return {"message": f"{application_stage} deleted successfully"}
