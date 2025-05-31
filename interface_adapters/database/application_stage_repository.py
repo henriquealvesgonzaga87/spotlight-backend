@@ -44,3 +44,25 @@ class SQLAlchemyApplicationStageRepository(ApplicationStageRepositoryInterface):
             raise NotFoundError("Application stage not found with the given ID")
         
         return application_stage
+    
+    def update_application_stage(self, application_stage: ApplicationStage, application_stage_id: int):
+        query_application_stage = self.get_application_stage_by_id(
+            application_stage_id=application_stage_id
+        )
+
+        try:
+            query_application_stage.application_stage = application_stage.application_stage
+            query_application_stage.updated_at = datetime.utcnow()
+
+            self.session.add(query_application_stage)
+            self.session.commit()
+            self.session.refresh(query_application_stage)
+
+            return query_application_stage
+
+        except IntegrityError as e:
+            self.session.rollback()
+            raise IntegrityError("UNIQUE constraint failed")
+        
+        finally:
+            self.session.close()
