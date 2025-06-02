@@ -1,8 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
-
-Base = declarative_base()
+from domain.entities.base import Base
 
 
 class User(Base):
@@ -13,6 +12,8 @@ class User(Base):
     password = Column(String, nullable=False)
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=True)
+
+    job = relationship("Job", back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"{self.name} {self.email}"

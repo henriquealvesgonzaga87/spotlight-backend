@@ -1,9 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-
-Base = declarative_base()
+from domain.entities.base import Base
 
 
 class Country(Base):
@@ -14,6 +12,7 @@ class Country(Base):
     code = Column(String(3), nullable=False, unique=True, index=True)
 
     states = relationship("State", back_populates="country", cascade="all, delete-orphan")
+    job = relationship("Job", back_populates="country", cascade="all, delete-orphan")
 
     def __str__(self):
         return f"{self.__class__.__name__}: {', '.join([f'{chave}={valor}' for chave, valor in self.__dict__.items()])}"
@@ -30,6 +29,7 @@ class State(Base):
 
     country = relationship("Country", back_populates="states")
     cities = relationship("City", back_populates="state", cascade="all, delete-orphan")
+    job = relationship("Job", back_populates="state", cascade="all, delete-orphan")
 
     def __str__(self):
         return f"{self.__class__.__name__}: {', '.join([f'{chave}={valor}' for chave, valor in self.__dict__.items()])}"
@@ -43,3 +43,4 @@ class City(Base):
     state_id = Column(Integer, ForeignKey("states.id", ondelete="CASCADE"), nullable=False)
 
     state = relationship("State", back_populates="cities")
+    job = relationship("Job", back_populates="city", cascade="all, delete-orphan")

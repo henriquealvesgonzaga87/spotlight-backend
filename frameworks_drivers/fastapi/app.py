@@ -5,7 +5,13 @@ from domain.exceptions.bad_request_error import BadRequestError
 from domain.exceptions.error_handler import ErrorHandler
 from domain.exceptions.not_found_error import NotFoundError
 from domain.exceptions.response_validation_error import ResponseValidationError
-from interface_adapters.api import user_routes, root_routes, company_routes, location_routes
+from interface_adapters.api import (
+    user_routes, 
+    root_routes, 
+    company_routes, 
+    location_routes,
+    application_stage_routes,
+)
 from containers.container import Container
 from starlette.middleware.cors import CORSMiddleware
 
@@ -19,6 +25,7 @@ class App:
             "interface_adapters.api.user_routes",
             "interface_adapters.api.company_routes",
             "interface_adapters.api.location_routes",
+            "interface_adapters.api.application_stage_routes",
         ])
 
         self.app = FastAPI(title=settings.PROJECT_NAME, root_path=settings.ROOT_PATH)
@@ -26,6 +33,7 @@ class App:
         self.app.include_router(user_routes.router, prefix=settings.PREFIX)
         self.app.include_router(company_routes.router, prefix=settings.PREFIX)
         self.app.include_router(location_routes.router, prefix=settings.PREFIX)
+        self.app.include_router(application_stage_routes.router, prefix=settings.PREFIX)
 
         origins = ['*']
 
