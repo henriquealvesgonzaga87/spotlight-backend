@@ -35,13 +35,14 @@ def mock_application_stage_use_cases():
 def mock_application_stage_repo_success(
     mock_application_stage_repo_interface,
     application_stage_created,
+    application_stage_updated,
     applications_stage,
 ):
     application_stage_repo = mock_application_stage_repo_interface
     application_stage_repo.create_application_stage.return_value = application_stage_created
     application_stage_repo.get_all_application_stage.return_value = applications_stage
     application_stage_repo.get_application_stage_by_id.return_value = application_stage_created
-
+    application_stage_repo.update_application_stage.return_value = application_stage_updated
 
     return application_stage_repo
 
@@ -52,6 +53,7 @@ def mock_application_stage_repo_failure(mock_session):
     repo.create_application_stage = Mock(side_effect=IntegrityError("Error"))
     repo.get_all_application_stage = Mock(side_effect=NotFoundError("Error"))
     repo.get_application_stage_by_id = Mock(side_effect=NotFoundError("Error"))
+    repo.update_application_stage = Mock(side_effect=IntegrityError("Error"))
 
     return repo
 

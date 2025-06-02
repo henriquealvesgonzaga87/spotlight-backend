@@ -79,3 +79,32 @@ class TestApplicationStage:
             mock_application_stage_repo_failure.get_application_stage_by_id(
                 application_stage_id=application_stage_id
             )
+
+    @pytest.mark.asyncio
+    async def test_update_application_stage_success(
+        self,
+        mock_application_stage_repo_success,
+        update_application_stage_data,
+        application_stage_id=1
+    ):
+        application_stage = await mock_application_stage_repo_success.update_application_stage(
+            application_stage=update_application_stage_data,
+            application_stage_id=application_stage_id
+        )
+
+        assert application_stage is not None
+        assert application_stage.id == application_stage_id
+        assert isinstance(application_stage, ApplicationStage)
+
+    @pytest.mark.asyncio
+    async def test_update_application_stage_failure(
+        self,
+        mock_application_stage_repo_failure,
+        update_application_stage_data,
+        application_stage_id=99
+    ):
+        with pytest.raises(IntegrityError, match="Error"):
+            await mock_application_stage_repo_failure.update_application_stage(
+            application_stage=update_application_stage_data,
+            application_stage_id=application_stage_id
+        )
