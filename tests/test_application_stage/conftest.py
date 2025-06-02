@@ -32,6 +32,13 @@ def mock_application_stage_use_cases():
 
 
 @pytest.fixture
+def mock_application_stage_for_route_tests():
+    repo = Mock()
+
+    return repo
+
+
+@pytest.fixture
 def mock_application_stage_repo_success(
     mock_application_stage_repo_interface,
     application_stage_created,
@@ -116,3 +123,13 @@ def applications_stage():
             updated_at=None
         ),
     ]
+
+
+@pytest.fixture
+def application_stage_json():
+    return {
+        "id":1,
+        "application_stage":"Test",
+        "created_at":"2025-04-24T20:29:20.461333",
+        "updated_at":None
+    }

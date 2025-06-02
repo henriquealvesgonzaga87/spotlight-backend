@@ -1,0 +1,51 @@
+import pytest
+
+from unittest.mock import Mock
+from fastapi.testclient import TestClient
+
+from interface_adapters.api.application_stage_routes import router
+from containers.container import Container
+
+
+client = TestClient(router)
+
+
+class TestApplicationStageRoutes:
+    @pytest.fixture(autouse=True)
+    def setup(
+        self,
+        mock_application_stage_use_cases,
+        mock_application_stage_for_route_tests
+    ):
+        container = Container()
+        container.wire(modules=["interface_adapters.api.application_stage_routes"])
+        container.application_stage_repository.override(mock_application_stage_for_route_tests)
+        container.application_stage_use_cases.override(mock_application_stage_use_cases)
+
+    @pytest.mark.asyncio
+    async def test_create_application_stage_route_success(
+        self,
+        mock_application_stage_use_cases,
+        create_application_stage_data,
+        application_stage_created,
+        application_stage_json
+    ):
+        mock_application_stage_use_cases.create_application_stage = Mock(return_value=application_stage_created)
+
+        application_stage_data = create_application_stage_data.model_dump()
+
+        response = client.post("/application_stage", json=application_stage_data)
+
+        assert response.status_code == 201
+        assert response.json() == application_stage_json
+
+    @pytest.mark.asyncio
+    async def test_create_application_stage_route_failure(
+        self,
+        create_application_stage_data,
+    ):
+        application_stage_data = create_application_stage_data.model_dump()
+
+        response = client.post("/application_stag", json=application_stage_data)
+
+        assert response.status_code == 404
