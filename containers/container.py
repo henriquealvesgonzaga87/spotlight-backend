@@ -1,5 +1,5 @@
 from dependency_injector import containers, providers
-from interface_adapters.database.application_stage_repository import SQLAlchemyApplicationStageRepository
+from interface_adapters.database.sqlalchemy.application_stage_repository import SQLAlchemyApplicationStageRepository
 from interface_adapters.database.sqlalchemy.company_repository import SQLAlchemyCompanyRepository
 from interface_adapters.database.sqlalchemy.dependencies import get_db
 from interface_adapters.database.sqlalchemy.location_repository import SQLAlchemyLocationRepository
