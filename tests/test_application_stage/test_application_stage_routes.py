@@ -128,3 +128,25 @@ class TestApplicationStageRoutes:
         response = client.patch(f"/application_stag/{application_stage_id}", json=application_stage_data)
 
         assert response.status_code == 404
+
+    @pytest.mark.asyncio
+    async def test_delete_application_stage_route_success(
+        self,
+        mock_application_stage_use_cases,
+        application_stage_id=1
+    ):
+        mock_application_stage_use_cases.delete_application_stage = Mock(return_value="Deleted successfully")
+
+        response = client.delete(f"/application_stage/{application_stage_id}")
+
+        assert response.status_code == 204
+        assert response.content.decode() == ''
+
+    @pytest.mark.asyncio
+    async def test_delete_application_stage_route_failure(
+        self,
+        application_stage_id=99
+    ):
+        response = client.delete(f"/application_stag/{application_stage_id}")
+
+        assert response.status_code == 404
