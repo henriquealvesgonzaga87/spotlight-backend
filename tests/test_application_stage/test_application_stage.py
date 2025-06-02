@@ -108,3 +108,26 @@ class TestApplicationStage:
             application_stage=update_application_stage_data,
             application_stage_id=application_stage_id
         )
+            
+    @pytest.mark.asyncio
+    async def test_delete_application_stage_success(
+        self,
+        mock_application_stage_repo_success,
+        application_stage_id=1
+    ):
+        application_stage = await mock_application_stage_repo_success.delete_application_stage(
+            application_stage_id=application_stage_id
+        )
+
+        assert application_stage is True
+
+    @pytest.mark.asyncio
+    async def test_delete_application_stage_failure(
+        self,
+        mock_application_stage_repo_failure,
+        application_stage_id=99
+    ):
+        with pytest.raises(NotFoundError, match="Error"):
+            await mock_application_stage_repo_failure.delete_application_stage(
+            application_stage_id=application_stage_id
+        )
