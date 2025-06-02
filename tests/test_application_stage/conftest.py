@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from domain.entities.application_stage import ApplicationStage
 from domain.exceptions.integrity_error import IntegrityError
+from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.application_stage_repository_interface import ApplicationStageRepositoryInterface
 from domain.schemas.application_stage_schema import ApplicationStageSchemaCreate
 from interface_adapters.database.sqlalchemy.application_stage_repository import SQLAlchemyApplicationStageRepository
@@ -33,10 +34,12 @@ def mock_application_stage_use_cases():
 @pytest.fixture
 def mock_application_stage_repo_success(
     mock_application_stage_repo_interface,
-    application_stage_created
+    application_stage_created,
+    applications_stage
 ):
     application_stage_repo = mock_application_stage_repo_interface
     application_stage_repo.create_application_stage.return_value = application_stage_created
+    application_stage_repo.get_all_application_stage.return_value = applications_stage
 
     return application_stage_repo
 
@@ -45,6 +48,7 @@ def mock_application_stage_repo_success(
 def mock_application_stage_repo_failure(mock_session):
     repo = SQLAlchemyApplicationStageRepository(session=mock_session)
     repo.create_application_stage = Mock(side_effect=IntegrityError("Error"))
+    repo.get_all_application_stage = Mock(side_effect=NotFoundError("Error"))
 
     return repo
 
