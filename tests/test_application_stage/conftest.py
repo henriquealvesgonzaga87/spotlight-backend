@@ -157,3 +157,13 @@ def applications_stage_json():
             'updated_at': None
         }
     ]
+
+
+@pytest.fixture
+def updated_application_stage_json():
+    return {
+        'id': 1, 
+        'application_stage': 'Test updated', 
+        'created_at': '2025-04-24T20:29:20.461333', 
+        'updated_at': '2025-04-24T20:29:20.461333'
+    }

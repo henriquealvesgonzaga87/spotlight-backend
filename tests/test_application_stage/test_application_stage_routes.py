@@ -97,3 +97,34 @@ class TestApplicationStageRoutes:
         response = client.get(f"/application_stag/{application_stage_id}")
 
         assert response.status_code == 404
+
+    @pytest.mark.asyncio
+    async def test_update_application_state_route_success(
+        self,
+        mock_application_stage_use_cases,
+        update_application_stage_data,
+        application_stage_updated,
+        updated_application_stage_json,
+        application_stage_id=1
+    ):
+        mock_application_stage_use_cases.update_application_stage = Mock(return_value=application_stage_updated)
+
+        application_stage_data = update_application_stage_data.model_dump()
+
+        response = client.patch(f"/application_stage/{application_stage_id}", json=application_stage_data)
+
+        assert response.status_code == 200
+        assert response.json() == updated_application_stage_json
+        assert response.json()["id"] == application_stage_id
+
+    @pytest.mark.asyncio
+    async def test_update_application_state_route_failure(
+        self,
+        update_application_stage_data,
+        application_stage_id=99
+    ):
+        application_stage_data = update_application_stage_data.model_dump()
+
+        response = client.patch(f"/application_stag/{application_stage_id}", json=application_stage_data)
+
+        assert response.status_code == 404
