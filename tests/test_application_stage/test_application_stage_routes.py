@@ -49,3 +49,26 @@ class TestApplicationStageRoutes:
         response = client.post("/application_stag", json=application_stage_data)
 
         assert response.status_code == 404
+
+
+    @pytest.mark.asyncio
+    async def test_get_all_application_stage_success(
+        self,
+        mock_application_stage_use_cases,
+        applications_stage,
+        applications_stage_json
+    ):
+        mock_application_stage_use_cases.get_all_application_stage = Mock(return_value=applications_stage)
+
+        response = client.get("/application_stage")
+
+        assert response.status_code == 200
+        assert response.json() == applications_stage_json
+
+    @pytest.mark.asyncio
+    async def test_get_all_application_stage_failure(
+        self,
+    ):
+        response = client.get("/application_stag")
+
+        assert response.status_code == 404

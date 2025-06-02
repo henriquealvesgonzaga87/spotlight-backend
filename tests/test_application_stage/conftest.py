@@ -133,3 +133,27 @@ def application_stage_json():
         "created_at":"2025-04-24T20:29:20.461333",
         "updated_at":None
     }
+
+
+@pytest.fixture
+def applications_stage_json():
+    return [
+        {
+            'id': 1, 
+            'application_stage': 'Test', 
+            'created_at': '2025-04-24T20:29:20.461333', 
+            'updated_at': None
+        }, 
+        {
+            'id': 2, 
+            'application_stage': 'Test second', 
+            'created_at': '2025-04-24T20:29:20.461333', 
+            'updated_at': None
+        }, 
+        {
+            'id': 3, 
+            'application_stage': 'Test third', 
+            'created_at': '2025-04-24T20:29:20.461333', 
+            'updated_at': None
+        }
+    ]
