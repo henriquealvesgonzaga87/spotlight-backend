@@ -54,3 +54,28 @@ class TestApplicationStage:
     ):
         with pytest.raises(NotFoundError, match="Error"):
             mock_application_stage_repo_failure.get_all_application_stage()
+
+    @pytest.mark.asyncio
+    async def test_get_application_stage_by_id_success(
+        self,
+        mock_application_stage_repo_success,
+        application_stage_id=1
+    ):
+        application_stage = await mock_application_stage_repo_success.get_application_stage_by_id(
+            application_stage_id=application_stage_id
+        )
+
+        assert application_stage is not None
+        assert application_stage.id == application_stage_id
+        assert isinstance(application_stage, ApplicationStage)
+
+    @pytest.mark.asyncio
+    async def test_get_application_stage_by_id_failure(
+        self,
+        mock_application_stage_repo_failure,
+        application_stage_id=99
+    ):
+        with pytest.raises(NotFoundError, match="Error"):
+            mock_application_stage_repo_failure.get_application_stage_by_id(
+                application_stage_id=application_stage_id
+            )
