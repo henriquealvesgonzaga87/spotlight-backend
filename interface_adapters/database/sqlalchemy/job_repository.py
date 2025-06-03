@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 
 from domain.entities.job import Job
+from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.job_repository_interface import JobRepositoryInterface
 
 
@@ -30,3 +31,11 @@ class SQLAlchemyJobRepository(JobRepositoryInterface):
         
         finally:
             self.session.close()
+
+    def get_all_jobs(self):
+        jobs = self.session.query(Job).all()
+
+        if len(jobs) == 0:
+            raise NotFoundError("Jobs not found")
+        
+        return jobs

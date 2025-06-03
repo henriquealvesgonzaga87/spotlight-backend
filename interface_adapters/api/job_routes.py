@@ -22,3 +22,13 @@ def create_job(job_data: JobSchemaCreate = Body(...), job_use_cases: JobUseCases
     job_json = jsonable_encoder(job)
 
     return job_json
+
+
+@router.get("/job", status_code=status.HTTP_200_OK, response_model=list[JobSchema])
+@inject
+def get_all_jobs(job_use_cases: JobUseCases = Depends(Provide[Container.job_use_cases])):
+    jobs = job_use_cases.get_all_jobs()
+
+    jobs_json = jsonable_encoder(jobs)
+
+    return jobs_json

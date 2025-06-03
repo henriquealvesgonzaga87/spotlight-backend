@@ -9,3 +9,6 @@ class JobUseCases:
     def create_job(self, job: Job):
         return self.job_repository.create_job(job=job)
     
+    def get_all_jobs(self):
+        return self.job_repository.get_all_jobs()
+    
