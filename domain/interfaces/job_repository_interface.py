@@ -10,3 +10,6 @@ class JobRepositoryInterface(ABC):
 
     async def get_all_jobs(self):
         pass
+
+    async def get_job_by_id(self, job_id: int):
+        pass

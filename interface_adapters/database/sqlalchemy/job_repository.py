@@ -39,3 +39,11 @@ class SQLAlchemyJobRepository(JobRepositoryInterface):
             raise NotFoundError("Jobs not found")
         
         return jobs
+    
+    def get_job_by_id(self, job_id: int):
+        job = self.session.query(Job).filter(Job.id == job_id).first()
+
+        if job is None:
+            raise NotFoundError("Job Not found")
+        
+        return job

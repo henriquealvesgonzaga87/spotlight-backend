@@ -32,3 +32,13 @@ def get_all_jobs(job_use_cases: JobUseCases = Depends(Provide[Container.job_use_
     jobs_json = jsonable_encoder(jobs)
 
     return jobs_json
+
+
+@router.get("/job/{job_id}", status_code=status.HTTP_200_OK, response_model=JobSchema)
+@inject
+def get_job_by_id(job_id: int, job_use_cases: JobUseCases = Depends(Provide[Container.job_use_cases])):
+    job = job_use_cases.get_job_by_id(job_id=job_id)
+
+    job_json = jsonable_encoder(job)
+
+    return job_json
