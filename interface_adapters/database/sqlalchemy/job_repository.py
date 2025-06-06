@@ -47,3 +47,28 @@ class SQLAlchemyJobRepository(JobRepositoryInterface):
             raise NotFoundError("Job Not found")
         
         return job
+    
+    def update_job(self, job_id: int, job: dict):
+        query_job = self.get_job_by_id(job_id=job_id)
+
+        if job["link"]:
+            job["link"] = str(job["link"])
+
+        try:
+            for key, value in job.items():
+                setattr(query_job, key, value)
+
+            query_job.updated_at = datetime.utcnow()
+
+            self.session.add(query_job)
+            self.session.commit()
+            self.session.refresh(query_job)
+
+            return query_job
+        
+        except Exception as e:
+            self.session.rollback()
+            raise(e)
+        
+        finally:
+            self.session.close()

@@ -4,7 +4,7 @@ from fastapi import APIRouter, status, Depends, Body
 
 from containers.container import Container
 from domain.entities.job import Job
-from domain.schemas.job_schema import JobSchema, JobSchemaCreate
+from domain.schemas.job_schema import JobSchema, JobSchemaCreate, JobSchemaUpdate
 from use_cases.job_use_cases import JobUseCases
 
 
@@ -38,6 +38,24 @@ def get_all_jobs(job_use_cases: JobUseCases = Depends(Provide[Container.job_use_
 @inject
 def get_job_by_id(job_id: int, job_use_cases: JobUseCases = Depends(Provide[Container.job_use_cases])):
     job = job_use_cases.get_job_by_id(job_id=job_id)
+
+    job_json = jsonable_encoder(job)
+
+    return job_json
+
+
+@router.patch("/job/{job_id}", status_code=status.HTTP_200_OK, response_model=JobSchema)
+@inject
+def update_job(
+    job_id: int,
+    job_data: JobSchemaUpdate = Body(...),
+    job_use_cases: JobUseCases = Depends(Provide[Container.job_use_cases])
+):
+    job_dict = job_data.model_dump(exclude_unset=True)
+    job = job_use_cases.update_job(
+        job_id=job_id, 
+        job=job_dict
+    )
 
     job_json = jsonable_encoder(job)
 

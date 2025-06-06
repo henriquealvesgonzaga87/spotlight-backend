@@ -24,3 +24,10 @@ class JobUseCases:
         self._validate_id(id=job_id)
         return self.job_repository.get_job_by_id(job_id=job_id)
     
+    def update_job(self, job_id: int, job: dict):
+        self._validate_id(id=job_id)
+        return self.job_repository.update_job(
+            job_id=job_id,
+            job=job
+        )
+    

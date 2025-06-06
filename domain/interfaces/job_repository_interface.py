@@ -13,3 +13,6 @@ class JobRepositoryInterface(ABC):
 
     async def get_job_by_id(self, job_id: int):
         pass
+
+    async def update_job(self, job_id: int, job: dict):
+        pass
