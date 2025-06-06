@@ -2,10 +2,12 @@ from dependency_injector import containers, providers
 from interface_adapters.database.sqlalchemy.application_stage_repository import SQLAlchemyApplicationStageRepository
 from interface_adapters.database.sqlalchemy.company_repository import SQLAlchemyCompanyRepository
 from interface_adapters.database.sqlalchemy.dependencies import get_db
+from interface_adapters.database.sqlalchemy.job_repository import SQLAlchemyJobRepository
 from interface_adapters.database.sqlalchemy.location_repository import SQLAlchemyLocationRepository
 from interface_adapters.database.sqlalchemy.user_repository import SQLAlchemyUserRepository
 from use_cases.application_stage_use_cases import ApplicationStageUseCases
 from use_cases.company_use_cases import CompanyUseCases
+from use_cases.job_use_cases import JobUseCases
 from use_cases.location_use_cases import LocationUseCases
 from use_cases.user_use_cases import UserUseCases
 from settings import get_settings
@@ -20,6 +22,7 @@ class Container(containers.DeclarativeContainer):
         "interface_adapters.api.company_routes",
         "interface_adapters.api.location_routes",
         "interface_adapters.api.application_stage_routes",
+        "interface_adapters.api.job_routes",
     ])
 
     data_base_session = providers.Resource(get_db)
@@ -34,4 +37,7 @@ class Container(containers.DeclarativeContainer):
     location_use_cases = providers.Factory(LocationUseCases, location_repository=location_repository)
 
     application_stage_repository = providers.Factory(SQLAlchemyApplicationStageRepository, session=data_base_session)
-    application_stage_use_cases = providers.Factory(ApplicationStageUseCases, application_stage_repository=application_stage_repository)    
+    application_stage_use_cases = providers.Factory(ApplicationStageUseCases, application_stage_repository=application_stage_repository)
+
+    job_repository = providers.Factory(SQLAlchemyJobRepository, session=data_base_session)
+    job_use_cases = providers.Factory(JobUseCases, job_respository=job_repository)
