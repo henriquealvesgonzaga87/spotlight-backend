@@ -51,11 +51,10 @@ class SQLAlchemyJobRepository(JobRepositoryInterface):
     def update_job(self, job_id: int, job: dict):
         query_job = self.get_job_by_id(job_id=job_id)
 
-        if job["link"]:
-            job["link"] = str(job["link"])
-
         try:
             for key, value in job.items():
+                if key == "link":
+                    value = str(job["link"])
                 setattr(query_job, key, value)
 
             query_job.updated_at = datetime.utcnow()
