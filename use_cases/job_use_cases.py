@@ -31,3 +31,7 @@ class JobUseCases:
             job=job
         )
     
+    def delete_job(self, job_id: int):
+        self._validate_id(id=job_id)
+        return self.job_repository.delete_job(job_id=job_id)
+    

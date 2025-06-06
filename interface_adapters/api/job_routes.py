@@ -60,3 +60,14 @@ def update_job(
     job_json = jsonable_encoder(job)
 
     return job_json
+
+
+@router.delete("/job/{job_id}", status_code=status.HTTP_204_NO_CONTENT)
+@inject
+def delete_job(
+    job_id: int,
+    job_use_cases: JobUseCases = Depends(Provide[Container.job_use_cases])
+):
+    job_use_cases.delete_job(job_id=job_id)
+
+    return {"message": "Job deleted successfully"}

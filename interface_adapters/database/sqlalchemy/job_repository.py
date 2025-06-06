@@ -72,3 +72,11 @@ class SQLAlchemyJobRepository(JobRepositoryInterface):
         
         finally:
             self.session.close()
+
+    def delete_job(self, job_id: int):
+        query_job = self.get_job_by_id(job_id=job_id)
+
+        self.session.delete(query_job)
+        self.session.commit()
+
+        return query_job

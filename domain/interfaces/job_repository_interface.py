@@ -16,3 +16,6 @@ class JobRepositoryInterface(ABC):
 
     async def update_job(self, job_id: int, job: dict):
         pass
+
+    async def delete_job(self, job_id: int):
+        pass
