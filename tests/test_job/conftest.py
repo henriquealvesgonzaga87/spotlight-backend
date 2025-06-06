@@ -28,6 +28,13 @@ def mock_job_use_cases():
 
 
 @pytest.fixture
+def mock_job_for_route_tests():
+    repo = Mock()
+
+    return repo
+
+
+@pytest.fixture
 def mock_job_repo_success(
     mock_job_repo_interface,
     job_created,
@@ -173,3 +180,90 @@ def jobs():
             updated_at= None
         ),
     ]
+
+
+@pytest.fixture
+def job_json_create():
+    return {
+        'id': 1, 
+        'name': 'Test', 
+        'link': None, 
+        'application_date': '2025-06-03', 
+        'application_stage_id': 1, 
+        'outcome': 'test', 
+        'user_id': 1, 
+        'company_id': 1, 
+        'country_id': 1, 
+        'state_id': 1, 
+        'city_id': 1, 
+        'created_at': '2025-06-06T17:35:35.863146', 
+        'updated_at': None
+    }
+
+
+@pytest.fixture
+def jobs_json_response():
+    return [
+        {
+            'id': 1, 
+            'name': 'Test1', 
+            'link': None, 
+            'application_date': '2025-06-03', 
+            'application_stage_id': 1, 
+            'outcome': 'Test1', 
+            'user_id': 1, 
+            'company_id': 1, 
+            'country_id': 1, 
+            'state_id': 1, ''
+            'city_id': 1, 
+            'created_at': '2025-06-06T17:35:35.863146', 
+            'updated_at': None}, 
+        {
+            'id': 2, 
+            'name': 'Test2', 
+            'link': None, 
+            'application_date': '2025-06-03', 
+            'application_stage_id': 1, 
+            'outcome': 'Test2', 
+            'user_id': 1, 
+            'company_id': 1, 
+            'country_id': 1, 
+            'state_id': 1, 
+            'city_id': 1, 
+            'created_at': '2025-06-06T17:35:35.863146', 
+            'updated_at': None}, 
+        {
+            'id': 3, 
+            'name': 'Test3', 
+            'link': None, 
+            'application_date': '2025-06-03', 
+            'application_stage_id': 1, 
+            'outcome': 'Test3', 
+            'user_id': 1, 
+            'company_id': 1, 
+            'country_id': 1, 
+            'state_id': 1, 
+            'city_id': 1, 
+            'created_at': '2025-06-06T17:35:35.863146', 
+            'updated_at': None
+        }
+    ]
+
+
+@pytest.fixture
+def job_json_update():
+    return {
+        'id': 1, 
+        'name': 'Update', 
+        'link': None, 
+        'application_date': '2025-06-03', 
+        'application_stage_id': 1, 
+        'outcome': 'Update', 
+        'user_id': 1, 
+        'company_id': 1, 
+        'country_id': 1, 
+        'state_id': 1, 
+        'city_id': 1, 
+        'created_at': '2025-06-06T17:35:35.863146', 
+        'updated_at': '2025-06-06T17:35:35.863146'
+    }
