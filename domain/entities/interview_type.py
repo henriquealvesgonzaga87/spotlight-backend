@@ -13,7 +13,7 @@ class InterviewType(Base):
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=True)
 
-    job = relationship("Interview", back_populates="interview_type", cascade="all, delete-orphan")
+    #job = relationship("Interview", back_populates="interview_type", cascade="all, delete-orphan")
 
     def __str__(self):
         return f"{self.__class__.__name__}: {', '.join([f'{chave}={valor}' for chave, valor in self.__dict__.items()])}"

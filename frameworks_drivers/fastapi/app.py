@@ -11,7 +11,8 @@ from interface_adapters.api import (
     company_routes, 
     location_routes,
     application_stage_routes,
-    job_routes
+    job_routes,
+    interview_type_routes
 )
 from containers.container import Container
 from starlette.middleware.cors import CORSMiddleware
@@ -28,6 +29,7 @@ class App:
             "interface_adapters.api.location_routes",
             "interface_adapters.api.application_stage_routes",
             "interface_adapters.api.job_routes",
+            "interface_adapters.api.interview_type_routes"
         ])
 
         self.app = FastAPI(title=settings.PROJECT_NAME, root_path=settings.ROOT_PATH)
@@ -37,6 +39,7 @@ class App:
         self.app.include_router(location_routes.router, prefix=settings.PREFIX)
         self.app.include_router(application_stage_routes.router, prefix=settings.PREFIX)
         self.app.include_router(job_routes.router, prefix=settings.PREFIX)
+        self.app.include_router(interview_type_routes.router, prefix=settings.PREFIX)
 
         origins = ['*']
 
