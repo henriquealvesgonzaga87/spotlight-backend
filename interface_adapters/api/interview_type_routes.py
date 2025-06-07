@@ -27,3 +27,15 @@ def create_interview_type(
     interview_type_json = jsonable_encoder(interview_type)
 
     return interview_type_json
+
+
+@router.get("/interview_type", status_code=status.HTTP_200_OK, response_model=list[InterviewTypeSchema])
+@inject
+def get_all_interview_type(
+    interview_type_use_cases: InterviewTypeUseCases = Depends(Provide[Container.interview_type_use_cases])
+):
+    interview_type = interview_type_use_cases.get_all_interview_type()
+
+    interview_type_json = jsonable_encoder(interview_type)
+
+    return interview_type_json

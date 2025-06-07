@@ -19,3 +19,6 @@ class InterviewTypeUseCases:
         return self.interview_type_repository.create_interview_type(
             interview_type=interview_type
         )
+    
+    def get_all_interview_type(self):
+        return self.interview_type_repository.get_all_interview_type()
