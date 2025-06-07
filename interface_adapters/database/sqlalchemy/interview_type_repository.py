@@ -36,3 +36,11 @@ class SQLAlchemyInterviewTypeRepository(InterviewTypeRepositoryInterface):
             raise NotFoundError("There are no data to show")
         
         return inteview_types
+    
+    def get_interview_type_by_id(self, interview_type_id: int):
+        interview_type = self.session.query(InterviewType).filter(InterviewType.id == interview_type_id).first()
+
+        if interview_type is None:
+            raise NotFoundError("Not found with the given parameter")
+
+        return interview_type 
