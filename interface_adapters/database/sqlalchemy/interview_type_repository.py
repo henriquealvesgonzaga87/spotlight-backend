@@ -43,4 +43,24 @@ class SQLAlchemyInterviewTypeRepository(InterviewTypeRepositoryInterface):
         if interview_type is None:
             raise NotFoundError("Not found with the given parameter")
 
-        return interview_type 
+        return interview_type
+    
+    def update_interview_type(self, interview_type_id: int, interview_type: InterviewType):
+        query_interview_type = self.get_interview_type_by_id(interview_type_id=interview_type_id)
+
+        try:
+            query_interview_type.interview_type = interview_type.interview_type
+            query_interview_type.updated_at = datetime.utcnow()
+
+            self.session.add(query_interview_type)
+            self.session.commit()
+            self.session.refresh(query_interview_type)
+
+            return query_interview_type
+        
+        except IntegrityError:
+            self.session.rollback()
+            raise IntegrityError("Something went wrong while saving")
+        
+        finally:
+            self.session.close()

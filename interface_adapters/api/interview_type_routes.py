@@ -52,3 +52,23 @@ def get_interview_type_by_id(
     interview_type_json = jsonable_encoder(interview_type)
 
     return interview_type_json
+
+
+@router.patch("/interview_type/{interview_type_id}", status_code=status.HTTP_200_OK, response_model=InterviewTypeSchema)
+@inject
+def update_interview_type(
+    interview_type_id: int,
+    interview_type_data: InterviewTypeSchemaCreate = Body(...),
+    interview_type_use_cases: InterviewTypeUseCases = Depends(Provide[Container.interview_type_use_cases])
+):
+    interview_type_dict = interview_type_data.model_dump()
+    interview_type = interview_type_use_cases.update_interview_type(
+        interview_type_id=interview_type_id,
+        interview_type=InterviewType(
+            **interview_type_dict
+        )
+    )
+
+    interview_type_json = jsonable_encoder(interview_type)
+
+    return interview_type_json
