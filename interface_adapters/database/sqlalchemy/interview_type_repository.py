@@ -64,3 +64,11 @@ class SQLAlchemyInterviewTypeRepository(InterviewTypeRepositoryInterface):
         
         finally:
             self.session.close()
+
+    def delete_interview_type(self, interview_type_id: int):
+        query_interview_type = self.get_interview_type_by_id(interview_type_id=interview_type_id)
+
+        self.session.delete(query_interview_type)
+        self.session.commit()
+
+        return query_interview_type
