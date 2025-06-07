@@ -30,7 +30,7 @@ class Job(Base):
     country = relationship("Country", back_populates="job")
     state = relationship("State", back_populates="job")
     city = relationship("City", back_populates="job")
-    #interview = relationship("Interview", back_populates="job", cascade="all, delete-orphan")
+    interview = relationship("Interview", back_populates="job", cascade="all, delete-orphan")
 
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=True)
