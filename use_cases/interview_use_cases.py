@@ -8,3 +8,6 @@ class InterviewUseCases:
 
     def create_interview(self, interview: Interview):
         return self.interview_repository.create_interview(interview=interview)
+    
+    def get_all_interview(self):
+        return self.interview_repository.get_all_interview()

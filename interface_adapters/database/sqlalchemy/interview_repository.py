@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from domain.entities.interview import Interview
 from domain.exceptions.integrity_error import IntegrityError
+from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.interview_repository_interface import InterviewRepositoryInterface
 
 
@@ -26,3 +27,11 @@ class SQLAlchemyInterviewRepository(InterviewRepositoryInterface):
         
         finally:
             self.session.close()
+
+    def get_all_interview(self):
+        query_interview = self.session.query(Interview).all()
+
+        if len(query_interview) == 0:
+            raise NotFoundError("There is no data to show")
+        
+        return query_interview
