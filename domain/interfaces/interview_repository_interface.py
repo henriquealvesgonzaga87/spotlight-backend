@@ -11,3 +11,7 @@ class InterviewRepositoryInterface(ABC):
     @abstractmethod
     async def get_all_interview(self):
         pass
+
+    @abstractmethod
+    async def get_interview_by_id(interview_id: int):
+        pass

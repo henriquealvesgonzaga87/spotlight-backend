@@ -39,3 +39,18 @@ def get_all_interview(
     interviews_json = jsonable_encoder(interviews)
 
     return interviews_json
+
+
+@router.get("/interview/{interview_id}", status_code=status.HTTP_200_OK, response_model=InterviewSchema)
+@inject
+def get_interview_by_id(
+    interview_id: int,
+    interview_use_cases: InterviewUseCases = Depends(Provide[Container.interview_use_cases])
+):
+    interview = interview_use_cases.get_interview_by_id(
+        interview_id=interview_id
+    )
+
+    interview_json = jsonable_encoder(interview)
+
+    return interview_json
