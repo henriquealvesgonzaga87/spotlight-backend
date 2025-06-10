@@ -1,0 +1,83 @@
+from datetime import datetime
+from sqlalchemy.orm import Session
+
+from domain.entities.interview import Interview
+from domain.exceptions.integrity_error import IntegrityError
+from domain.exceptions.not_found_error import NotFoundError
+from domain.interfaces.interview_repository_interface import InterviewRepositoryInterface
+
+
+class SQLAlchemyInterviewRepository(InterviewRepositoryInterface):
+    def __init__(self, session: Session):
+        self.session = session
+
+    def create_interview(self, interview: Interview):
+        try:
+            interview.created_at = datetime.utcnow()
+
+            self.session.add(interview)
+            self.session.commit()
+            self.session.refresh(interview)
+
+            return interview
+        
+        except IntegrityError:
+            self.session.rollback()
+            raise IntegrityError("Error on saving the interview")
+        
+        finally:
+            self.session.close()
+
+    def get_all_interview(self):
+        query_interview = self.session.query(Interview).all()
+
+        if len(query_interview) == 0:
+            raise NotFoundError("There is no data to show")
+        
+        return query_interview
+    
+    def get_interview_by_id(self, interview_id: int):
+        query_interview = self.session.query(Interview).filter(Interview.id == interview_id).first()
+
+        if query_interview is None:
+            raise NotFoundError("Not found with the given parameter")
+        
+        return query_interview
+    
+    def update_interview(self, interview_id: int, interview: dict):
+        query_interview = self.get_interview_by_id(interview_id=interview_id)
+
+        try:
+            for key, value in interview.items():
+                setattr(query_interview, key, value)
+
+            query_interview.updated_at = datetime.utcnow()
+
+            self.session.add(query_interview)
+            self.session.commit()
+            self.session.refresh(query_interview)
+
+            return query_interview
+        
+        except IntegrityError:
+            self.session.rollback()
+            raise IntegrityError("Something went wrong while updating")
+        
+        finally:
+            self.session.close()
+
+    def delete_interview(self, interview_id: int):
+        query_interview = self.get_interview_by_id(interview_id=interview_id)
+
+        try:
+            self.session.delete(query_interview)
+            self.session.commit()
+
+            return query_interview
+        
+        except IntegrityError:
+            self.session.rollback()
+            raise IntegrityError("Impossible to delete")
+        
+        finally:
+            self.session.close()
