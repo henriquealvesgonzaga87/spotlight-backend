@@ -72,3 +72,14 @@ def update_interview(
     interview_json = jsonable_encoder(interview)
 
     return interview_json
+
+
+@router.delete("/interview/{interview_id}", status_code=status.HTTP_204_NO_CONTENT)
+@inject
+def delete_interview(
+    interview_id: int,
+    interview_use_cases: InterviewUseCases = Depends(Provide[Container.interview_use_cases])
+):
+    interview_use_cases.delete_interview(interview_id=interview_id)
+
+    return {"message": "interview deleted successfully"}

@@ -65,3 +65,19 @@ class SQLAlchemyInterviewRepository(InterviewRepositoryInterface):
         
         finally:
             self.session.close()
+
+    def delete_interview(self, interview_id: int):
+        query_interview = self.get_interview_by_id(interview_id=interview_id)
+
+        try:
+            self.session.delete(query_interview)
+            self.session.commit()
+
+            return query_interview
+        
+        except IntegrityError:
+            self.session.rollback()
+            raise IntegrityError("Impossible to delete")
+        
+        finally:
+            self.session.close()
