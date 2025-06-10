@@ -23,3 +23,10 @@ class InterviewUseCases:
     def get_interview_by_id(self, interview_id: int):
         self._validate_id(id=interview_id)
         return self.interview_repository.get_interview_by_id(interview_id=interview_id)
+    
+    def update_interview(self, interview_id: int, interview: dict):
+        self._validate_id(id=interview_id)
+        return self.interview_repository.update_interview(
+            interview_id=interview_id,
+            interview=interview
+        )

@@ -4,7 +4,7 @@ from fastapi import APIRouter, status, Depends, Body
 
 from containers.container import Container
 from domain.entities.interview import Interview
-from domain.schemas.interview_schema import InterviewSchema, InterviewSchemaCreate
+from domain.schemas.interview_schema import InterviewSchema, InterviewSchemaCreate, InterviewSchemaUpdate
 from use_cases.interview_use_cases import InterviewUseCases
 
 
@@ -49,6 +49,24 @@ def get_interview_by_id(
 ):
     interview = interview_use_cases.get_interview_by_id(
         interview_id=interview_id
+    )
+
+    interview_json = jsonable_encoder(interview)
+
+    return interview_json
+
+
+@router.patch("/interview/{interview_id}", status_code=status.HTTP_200_OK, response_model=InterviewSchema)
+@inject
+def update_interview(
+    interview_id: int,
+    interview_data: InterviewSchemaUpdate = Body(...),
+    interview_use_cases: InterviewUseCases = Depends(Provide[Container.interview_use_cases])
+):
+    interview_dict = interview_data.model_dump(exclude_unset=True)
+    interview = interview_use_cases.update_interview(
+        interview_id=interview_id,
+        interview=interview_dict
     )
 
     interview_json = jsonable_encoder(interview)

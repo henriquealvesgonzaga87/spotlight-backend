@@ -13,5 +13,9 @@ class InterviewRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def get_interview_by_id(interview_id: int):
+    async def get_interview_by_id(self, interview_id: int):
+        pass
+
+    @abstractmethod
+    async def update_interview(self, interview_id: int, interview: dict):
         pass

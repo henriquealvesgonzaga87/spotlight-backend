@@ -43,3 +43,25 @@ class SQLAlchemyInterviewRepository(InterviewRepositoryInterface):
             raise NotFoundError("Not found with the given parameter")
         
         return query_interview
+    
+    def update_interview(self, interview_id: int, interview: dict):
+        query_interview = self.get_interview_by_id(interview_id=interview_id)
+
+        try:
+            for key, value in interview.items():
+                setattr(query_interview, key, value)
+
+            query_interview.updated_at = datetime.utcnow()
+
+            self.session.add(query_interview)
+            self.session.commit()
+            self.session.refresh(query_interview)
+
+            return query_interview
+        
+        except IntegrityError:
+            self.session.rollback()
+            raise IntegrityError("Something went wrong while updating")
+        
+        finally:
+            self.session.close()
