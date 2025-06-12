@@ -3,7 +3,7 @@ from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, status, Depends, Body
 
 from containers.container import Container
-from domain.schemas.auth_schema import LoginSchema, TokenSchema
+from domain.schemas.auth_schema import LoginSchema, RefreshTokenSchema, TokenSchema
 from use_cases.auth_use_cases import AuthUseCases
 
 
@@ -22,6 +22,19 @@ def login(
         login_data=LoginSchema(**login_data_dict)
     )
 
+    tokens_json = jsonable_encoder(obj=tokens)
+    
+    return tokens_json
+
+
+@router.post("/refresh-token", status_code=status.HTTP_200_OK, response_model=TokenSchema)
+@inject
+def refresh_token(
+    refresh_token: RefreshTokenSchema = Body(...),
+    auth_use_cases: AuthUseCases = Depends(Provide[Container.auth_use_cases])
+):
+    tokens = auth_use_cases.refresh_token(refresh_token=refresh_token.refresh_token)
+    
     tokens_json = jsonable_encoder(obj=tokens)
     
     return tokens_json

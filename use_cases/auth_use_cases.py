@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
-from jose import jwt
+from jose import jwt, ExpiredSignatureError, JWTError
 
 from domain.exceptions.unauthorized_error import UnauthorizedError
 from domain.interfaces.auth_repository_interface import AuthRepositoryInterface
@@ -59,4 +59,22 @@ class AuthUseCases:
         return TokenSchema(
             access_token=access_token, 
             refresh_token=refresh_token
-        )    
+        )
+    
+    def refresh_token(self, refresh_token: str):
+        if not refresh_token:
+            raise BadRequestError("Refresh token is required")
+        
+        try:
+            payload = jwt.decode(refresh_token, self.REFRESH_SECRET_KEY, algorithms=self.ALGORITHM)
+            email = payload.get("sub")
+            access_token = self._create_access_token({"sub": email})
+            new_refresh_token = self._create_refresh_token({"sub": email})
+            return TokenSchema(access_token=access_token, refresh_token=new_refresh_token)
+        
+        except ExpiredSignatureError:
+            raise UnauthorizedError("Invalid refresh token")
+        
+        except JWTError:
+            raise UnauthorizedError("Invalid refresh token")
+        
