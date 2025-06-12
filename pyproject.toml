@@ -21,7 +21,8 @@ dependencies = [
     "coverage (>=7.6.12,<8.0.0)",
     "pytest-asyncio (>=0.25.3,<0.26.0)",
     "sqlalchemy-utils (>=0.41.2,<0.42.0)",
-    "validators (>=0.34.0,<0.35.0)"
+    "validators (>=0.34.0,<0.35.0)",
+    "python-jose[cryptography] (>=3.5.0,<4.0.0)"
 ]
 
 
