@@ -1,8 +1,10 @@
 from dependency_injector import containers, providers
+from interface_adapters.database.redis.auth_redis_repository import RedisAuthRepository
 from interface_adapters.database.sqlalchemy.application_stage_repository import SQLAlchemyApplicationStageRepository
 from interface_adapters.database.sqlalchemy.auth_repository import SQLAlchemyAuthRepository
 from interface_adapters.database.sqlalchemy.company_repository import SQLAlchemyCompanyRepository
 from interface_adapters.database.sqlalchemy.dependencies import get_db
+from interface_adapters.database.redis.dependencies import RedisClient
 from interface_adapters.database.sqlalchemy.interview_repository import SQLAlchemyInterviewRepository
 from interface_adapters.database.sqlalchemy.interview_type_repository import SQLAlchemyInterviewTypeRepository
 from interface_adapters.database.sqlalchemy.job_repository import SQLAlchemyJobRepository
@@ -35,6 +37,7 @@ class Container(containers.DeclarativeContainer):
     ])
 
     data_base_session = providers.Resource(get_db)
+    redis_client = providers.Resource(RedisClient().get_redis_client)
 
     user_repository = providers.Factory(SQLAlchemyUserRepository, session=data_base_session)
     user_use_cases = providers.Factory(UserUseCases, user_repository=user_repository)
@@ -58,4 +61,8 @@ class Container(containers.DeclarativeContainer):
     interview_use_cases = providers.Factory(InterviewUseCases, interview_repository=interview_repository)
 
     auth_repository = providers.Factory(SQLAlchemyAuthRepository, session=data_base_session)
-    auth_use_cases = providers.Factory(AuthUseCases, auth_repository=auth_repository)
+    redis_auth_repository = providers.Factory(RedisAuthRepository, redis_client=redis_client)
+    auth_use_cases = providers.Factory(
+        AuthUseCases, 
+        auth_repository=auth_repository,
+        auth_redis_repository=redis_auth_repository)

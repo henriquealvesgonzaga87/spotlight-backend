@@ -8,6 +8,7 @@ from domain.exceptions.unauthorized_error import UnauthorizedError
 from domain.interfaces.auth_repository_interface import AuthRepositoryInterface
 from domain.exceptions.bad_request_error import BadRequestError
 
+from domain.interfaces.redis.auth_redis_repository_interface import AuthRedisRepositoryInterface
 from domain.schemas.auth_schema import LoginSchema, TokenSchema
 from utils.utils import verify
 
@@ -16,8 +17,13 @@ load_dotenv()
 
 
 class AuthUseCases:
-    def __init__(self, auth_repository: AuthRepositoryInterface):
+    def __init__(
+            self, 
+            auth_repository: AuthRepositoryInterface,
+            auth_redis_repository: AuthRedisRepositoryInterface
+        ):
         self.auth_repository = auth_repository
+        self.auth_redis_repository = auth_redis_repository
         self.SECRET_KEY = os.getenv("SECRET_KEY")
         self.REFRESH_SECRET_KEY = os.getenv("REFRESH_SECRET_KEY")
         self.ALGORITHM = os.getenv("ALGORITHM")
@@ -77,4 +83,17 @@ class AuthUseCases:
         
         except JWTError:
             raise UnauthorizedError("Invalid refresh token")
+        
+    def revoke_refresh_token(self, refresh_token: str, expires_in: int):
+        if not refresh_token:
+            raise BadRequestError("Refresh token is required")
+        
+        expires_in = int(self.REFRESH_TOKEN_EXPIRE_DAYS) * 24 * 60 * 60  # Default to days in seconds
+        if not isinstance(expires_in, int) or expires_in <= 0:
+            raise BadRequestError("Expires in must be a positive integer representing seconds")
+        
+        try:
+            return self.auth_redis_repository.revoke_refresh_token(refresh_token, expires_in)
+        except Exception as e:
+            raise UnauthorizedError(f"Error revoking refresh token: {str(e)}")
         

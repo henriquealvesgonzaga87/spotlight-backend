@@ -1,10 +1,16 @@
+import os
+
+from dotenv import load_dotenv
 from fastapi.encoders import jsonable_encoder
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, status, Depends, Body
 
 from containers.container import Container
-from domain.schemas.auth_schema import LoginSchema, RefreshTokenSchema, TokenSchema
+from domain.schemas.auth_schema import LoginSchema, LogoutSchema, RefreshTokenSchema, TokenSchema
 from use_cases.auth_use_cases import AuthUseCases
+
+
+load_dotenv()
 
 
 router = APIRouter()
@@ -38,3 +44,17 @@ def refresh_token(
     tokens_json = jsonable_encoder(obj=tokens)
     
     return tokens_json
+
+
+@router.post("/logout", status_code=status.HTTP_200_OK)
+@inject
+def logout(
+    refresh_token: LogoutSchema = Body(...),
+    auth_use_cases: AuthUseCases = Depends(Provide[Container.auth_use_cases])
+):
+    auth_use_cases.revoke_refresh_token(
+        refresh_token=refresh_token.refresh_token,
+        expires_in=int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS"))
+    )
+
+    return {"message": "Logout successful"}
