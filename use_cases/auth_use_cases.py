@@ -71,6 +71,9 @@ class AuthUseCases:
         if not refresh_token:
             raise BadRequestError("Refresh token is required")
         
+        if self.is_refresh_token_revoked(refresh_token):
+            raise UnauthorizedError("Refresh token has been revoked")
+        
         try:
             payload = jwt.decode(refresh_token, self.REFRESH_SECRET_KEY, algorithms=self.ALGORITHM)
             email = payload.get("sub")
@@ -96,4 +99,13 @@ class AuthUseCases:
             return self.auth_redis_repository.revoke_refresh_token(refresh_token, expires_in)
         except Exception as e:
             raise UnauthorizedError(f"Error revoking refresh token: {str(e)}")
+        
+    def is_refresh_token_revoked(self, refresh_token):
+        if not refresh_token:
+            raise BadRequestError("Refresh token is required")
+        
+        try:
+            return self.auth_redis_repository.is_refresh_token_revoked(refresh_token)
+        except Exception as e:
+            raise UnauthorizedError(f"Error checking refresh token status: {str(e)}")
         

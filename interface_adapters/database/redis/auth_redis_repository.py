@@ -12,3 +12,9 @@ class RedisAuthRepository(AuthRedisRepositoryInterface):
             return True
         except Exception as e:
             raise Exception(f"Error revoking refresh token: {str(e)}")
+        
+    def is_refresh_token_revoked(self, refresh_token):
+        try:
+            return self.redis_client.get(refresh_token) is not None
+        except Exception as e:
+            raise Exception(f"Error checking refresh token status: {str(e)}")
