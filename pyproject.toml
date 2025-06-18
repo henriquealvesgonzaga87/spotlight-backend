@@ -23,7 +23,8 @@ dependencies = [
     "sqlalchemy-utils (>=0.41.2,<0.42.0)",
     "validators (>=0.34.0,<0.35.0)",
     "python-jose[cryptography] (>=3.5.0,<4.0.0)",
-    "redis (>=6.2.0,<7.0.0)"
+    "redis (>=6.2.0,<7.0.0)",
+    "jwt (>=1.3.1,<2.0.0)"
 ]
 
 

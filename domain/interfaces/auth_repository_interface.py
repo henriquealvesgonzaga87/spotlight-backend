@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-from domain.schemas.auth_schema import LoginSchema
-
 
 class AuthRepositoryInterface(ABC):
 

@@ -91,6 +91,9 @@ class AuthUseCases:
         if not refresh_token:
             raise BadRequestError("Refresh token is required")
         
+        if self.is_refresh_token_revoked(refresh_token=refresh_token):
+            raise UnauthorizedError("Refresh token already revoked")
+        
         expires_in = int(self.REFRESH_TOKEN_EXPIRE_DAYS) * 24 * 60 * 60  # Default to days in seconds
         if not isinstance(expires_in, int) or expires_in <= 0:
             raise BadRequestError("Expires in must be a positive integer representing seconds")
