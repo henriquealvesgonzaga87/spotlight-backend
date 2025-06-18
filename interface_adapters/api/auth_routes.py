@@ -14,7 +14,9 @@ from use_cases.auth_use_cases import AuthUseCases
 load_dotenv()
 
 
-router = APIRouter()
+router = APIRouter(
+    tags=["auth"]
+)
 
 
 @router.post("/login", status_code=status.HTTP_200_OK, response_model=TokenSchema)

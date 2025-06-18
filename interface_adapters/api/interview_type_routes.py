@@ -5,10 +5,14 @@ from fastapi import APIRouter, status, Depends, Body
 from containers.container import Container
 from domain.entities.interview_type import InterviewType
 from domain.schemas.interview_type_schema import InterviewTypeSchema, InterviewTypeSchemaCreate
+from interface_adapters.api.dependencies.dependencies import login_required
 from use_cases.interview_type_use_cases import InterviewTypeUseCases
 
 
-router = APIRouter()
+router = APIRouter(
+    dependencies=[Depends(login_required)],
+    tags=["interview_type"]
+)
 
 
 @router.post("/interview_type", status_code=status.HTTP_201_CREATED, response_model=InterviewTypeSchema)

@@ -5,10 +5,14 @@ from fastapi import APIRouter, status, Depends, Body
 from containers.container import Container
 from domain.entities.job import Job
 from domain.schemas.job_schema import JobSchema, JobSchemaCreate, JobSchemaUpdate
+from interface_adapters.api.dependencies.dependencies import login_required
 from use_cases.job_use_cases import JobUseCases
 
 
-router = APIRouter()
+router = APIRouter(
+    dependencies=[Depends(login_required)],
+    tags=["jobs"]
+)
 
 
 @router.post("/job", status_code=status.HTTP_201_CREATED, response_model=JobSchema)
