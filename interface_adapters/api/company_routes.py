@@ -5,10 +5,14 @@ from fastapi import APIRouter, status, Depends, Body
 from domain.entities.company import Company
 from domain.schemas.company_schema import CompanySchema, CompanySchemaCreate, CompanySchemaUpdate
 from containers.container import Container
+from interface_adapters.api.dependencies.dependencies import login_required
 from use_cases.company_use_cases import CompanyUseCases
 
 
-router = APIRouter()
+router = APIRouter(
+    dependencies=[Depends(login_required)],
+    tags=["company"]
+)
 
 
 @router.post("/company", status_code=status.HTTP_201_CREATED, response_model=CompanySchema)

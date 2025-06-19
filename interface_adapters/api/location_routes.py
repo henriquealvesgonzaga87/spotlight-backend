@@ -5,10 +5,14 @@ from dependency_injector.wiring import inject, Provide
 from containers.container import Container
 from domain.entities.location import City, State
 from domain.schemas.location_schema import CityCreateSchema, CitySchema, CountrySchema, StateCreateSchema, StateSchema
+from interface_adapters.api.dependencies.dependencies import login_required
 from use_cases.location_use_cases import LocationUseCases
 
 
-router = APIRouter()
+router = APIRouter(
+    dependencies=[Depends(login_required)],
+    tags=["location"]
+)
 
 
 @router.post("/location/country", status_code=status.HTTP_201_CREATED)

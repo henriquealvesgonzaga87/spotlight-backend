@@ -5,10 +5,14 @@ from fastapi import APIRouter, status, Depends, Body
 from containers.container import Container
 from domain.entities.application_stage import ApplicationStage
 from domain.schemas.application_stage_schema import ApplicationStageSchema, ApplicationStageSchemaCreate
+from interface_adapters.api.dependencies.dependencies import login_required
 from use_cases.application_stage_use_cases import ApplicationStageUseCases
 
 
-router = APIRouter()
+router = APIRouter(
+    dependencies=[Depends(login_required)],
+    tags=["application_stage"]
+)
 
 
 @router.post("/application_stage", status_code=status.HTTP_201_CREATED, response_model=ApplicationStageSchema)

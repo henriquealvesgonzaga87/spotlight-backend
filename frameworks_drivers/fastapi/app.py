@@ -5,6 +5,7 @@ from domain.exceptions.bad_request_error import BadRequestError
 from domain.exceptions.error_handler import ErrorHandler
 from domain.exceptions.not_found_error import NotFoundError
 from domain.exceptions.response_validation_error import ResponseValidationError
+from domain.exceptions.unauthorized_error import UnauthorizedError
 from interface_adapters.api import (
     user_routes, 
     root_routes, 
@@ -13,7 +14,8 @@ from interface_adapters.api import (
     application_stage_routes,
     job_routes,
     interview_type_routes,
-    interview_routes
+    interview_routes,
+    auth_routes
 )
 from containers.container import Container
 from starlette.middleware.cors import CORSMiddleware
@@ -32,6 +34,7 @@ class App:
             "interface_adapters.api.job_routes",
             "interface_adapters.api.interview_type_routes",
             "interface_adapters.api.interview_routes",
+            "interface_adapters.api.auth_routes",
         ])
 
         self.app = FastAPI(title=settings.PROJECT_NAME, root_path=settings.ROOT_PATH)
@@ -43,6 +46,7 @@ class App:
         self.app.include_router(job_routes.router, prefix=settings.PREFIX)
         self.app.include_router(interview_type_routes.router, prefix=settings.PREFIX)
         self.app.include_router(interview_routes.router, prefix=settings.PREFIX)
+        self.app.include_router(auth_routes.router, prefix=settings.PREFIX)
 
         origins = ['*']
 
@@ -69,6 +73,10 @@ class App:
         @self.app.exception_handler(BadRequestError)
         def bad_request_error(request: Request, exc: BadRequestError):
             return ErrorHandler.bad_request_error_handler(request=request, exc=exc)
+        
+        @self.app.exception_handler(UnauthorizedError)
+        def unauthorized_error(request: Request, exc: UnauthorizedError):
+            return ErrorHandler.unauthorized_error_handler(request=request, exc=exc)
 
     @classmethod
     def get_app(cls, settings: BaseSettings) -> FastAPI:
