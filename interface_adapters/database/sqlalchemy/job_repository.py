@@ -32,24 +32,24 @@ class SQLAlchemyJobRepository(JobRepositoryInterface):
         finally:
             self.session.close()
 
-    def get_all_jobs(self):
-        jobs = self.session.query(Job).all()
+    def get_all_jobs(self, user_id: int):
+        jobs = self.session.query(Job).filter(Job.user_id == user_id).all()
 
         if len(jobs) == 0:
             raise NotFoundError("Jobs not found")
         
         return jobs
     
-    def get_job_by_id(self, job_id: int):
-        job = self.session.query(Job).filter(Job.id == job_id).first()
+    def get_job_by_id(self, job_id: int, user_id: int):
+        job = self.session.query(Job).filter(Job.id == job_id).filter(Job.user_id == user_id).first()
 
         if job is None:
             raise NotFoundError("Job Not found")
         
         return job
     
-    def update_job(self, job_id: int, job: dict):
-        query_job = self.get_job_by_id(job_id=job_id)
+    def update_job(self, job_id: int, job: dict, user_id: int):
+        query_job = self.get_job_by_id(job_id=job_id, user_id=user_id)
 
         try:
             for key, value in job.items():
@@ -72,8 +72,8 @@ class SQLAlchemyJobRepository(JobRepositoryInterface):
         finally:
             self.session.close()
 
-    def delete_job(self, job_id: int):
-        query_job = self.get_job_by_id(job_id=job_id)
+    def delete_job(self, job_id: int, user_id: int):
+        query_job = self.get_job_by_id(job_id=job_id, user_id=user_id)
 
         self.session.delete(query_job)
         self.session.commit()

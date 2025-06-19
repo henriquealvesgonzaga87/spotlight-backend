@@ -17,21 +17,26 @@ class JobUseCases:
     def create_job(self, job: Job):
         return self.job_repository.create_job(job=job)
     
-    def get_all_jobs(self):
-        return self.job_repository.get_all_jobs()
+    def get_all_jobs(self, user_id: int):
+        self._validate_id(id=user_id)
+        return self.job_repository.get_all_jobs(user_id=user_id)
     
-    def get_job_by_id(self, job_id: int):
+    def get_job_by_id(self, job_id: int, user_id: int):
         self._validate_id(id=job_id)
-        return self.job_repository.get_job_by_id(job_id=job_id)
+        self._validate_id(id=user_id)
+        return self.job_repository.get_job_by_id(job_id=job_id, user_id=user_id)
     
-    def update_job(self, job_id: int, job: dict):
+    def update_job(self, job_id: int, job: dict, user_id: int):
         self._validate_id(id=job_id)
+        self._validate_id(id=user_id)
         return self.job_repository.update_job(
             job_id=job_id,
-            job=job
+            job=job,
+            user_id=user_id
         )
     
-    def delete_job(self, job_id: int):
+    def delete_job(self, job_id: int, user_id: int):
         self._validate_id(id=job_id)
-        return self.job_repository.delete_job(job_id=job_id)
+        self._validate_id(id=user_id)
+        return self.job_repository.delete_job(job_id=job_id, user_id=user_id)
     
