@@ -15,8 +15,14 @@ class SQLAlchemyApplicationStageRepository(ApplicationStageRepositoryInterface):
 
     def create_application_stage(self, application_stage: ApplicationStage):
         try:
+            application_stage.application_stage = str(application_stage.application_stage).lower()
             application_stage.created_at = datetime.utcnow()
             application_stage.updated_at = None
+
+            query_application_stage = self.get_application_stage_by_name_exactly(application_stage=application_stage.application_stage)
+
+            if query_application_stage:
+                return query_application_stage
 
             self.session.add(application_stage)
             self.session.commit()
@@ -51,7 +57,7 @@ class SQLAlchemyApplicationStageRepository(ApplicationStageRepositoryInterface):
         try:
             query_application_stage = self.session.query(ApplicationStage).filter(
                 ApplicationStage.application_stage.ilike(f"%{application_stage}%")).all()
-
+            
             if len(query_application_stage) == 0:
                 raise NotFoundError("Not found with the given name")
             
@@ -62,11 +68,8 @@ class SQLAlchemyApplicationStageRepository(ApplicationStageRepositoryInterface):
         
     def get_application_stage_by_name_exactly(self, application_stage: str):
         query_application_stage = self.session.query(ApplicationStage).filter(
-            ApplicationStage.application_stage == application_stage.title()
+            ApplicationStage.application_stage == application_stage.lower()
         ).first()
-
-        if query_application_stage is None:
-            raise NotFoundError(f"application with name: '{application_stage}' not found")
         
         return query_application_stage
     
