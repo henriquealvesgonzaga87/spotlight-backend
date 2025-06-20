@@ -6,7 +6,6 @@ from containers.container import Container
 from domain.entities.job import Job
 from domain.schemas.job_schema import JobSchema, JobSchemaCreate, JobSchemaUpdate
 from interface_adapters.api.dependencies.dependencies import login_required
-from use_cases.auth_use_cases import AuthUseCases
 from use_cases.job_use_cases import JobUseCases
 
 
