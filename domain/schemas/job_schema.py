@@ -29,7 +29,7 @@ class JobSchemaCreate(BaseModel):
     application_date: Optional[date] = None
     application_stage_id: int
     outcome: Optional[str] = None
-    user_id: int
+    user_id: Optional[int] = None
     company_id: int
     country_id: int
     state_id: int

@@ -2,14 +2,14 @@ import os
 
 from dotenv import load_dotenv
 from typing import Annotated
-from fastapi import Depends, Header
+from fastapi import Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, ExpiredSignatureError, JWTError
 from dependency_injector.wiring import inject, Provide
 
 from containers.container import Container
-from use_cases.auth_use_cases import AuthUseCases
 from domain.exceptions.unauthorized_error import UnauthorizedError
+from use_cases.auth_use_cases import AuthUseCases
 
 
 load_dotenv()
@@ -20,6 +20,7 @@ bearer_schema = HTTPBearer(auto_error=False)
 @inject
 def login_required(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(bearer_schema)],
+    auth_use_cases: AuthUseCases = Depends(Provide[Container.auth_use_cases])
 ):
     if credentials is None:
         raise UnauthorizedError("Missing Authorization header: WWW-Authenticate: Bearer")
@@ -38,7 +39,9 @@ def login_required(
         if email is None:
             raise JWTError()
         
-        return email
+        user = auth_use_cases.get_user_by_email(email=email)
+        
+        return user
         
     except ExpiredSignatureError:
         raise UnauthorizedError("Access-token expired. WWW-Authenticate: Bearer")

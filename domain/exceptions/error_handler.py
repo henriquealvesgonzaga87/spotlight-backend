@@ -1,5 +1,6 @@
 from fastapi import status, Request
 from fastapi.responses import JSONResponse
+from domain.exceptions.argument_error import ArgumentError
 from domain.exceptions.bad_request_error import BadRequestError
 from domain.exceptions.not_found_error import NotFoundError
 from domain.exceptions.response_validation_error import ResponseValidationError
@@ -19,14 +20,14 @@ class ErrorHandler:
     def integrity_error_handler(request: Request, exc: IntegrityError):
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
-            content={"message": "Integrity error: duplicate entry or constraint violation."}
+            content={"message": str(exc)}
         )
     
     @staticmethod
     def not_found_error_handler(request: Request, exc: NotFoundError):
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
-            content={"message": "Not found with the given parameter"}
+            content={"message": str(exc)}
         )
     
     @staticmethod
@@ -40,5 +41,12 @@ class ErrorHandler:
     def unauthorized_error_handler(request: Request, exc: UnauthorizedError):
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
+            content={"message": str(exc)}
+        )
+    
+    @staticmethod
+    def argument_error_handler(request: Request, exc: ArgumentError):
+        return JSONResponse(
+            status_code=status.HTTP_502_BAD_GATEWAY,
             content={"message": str(exc)}
         )

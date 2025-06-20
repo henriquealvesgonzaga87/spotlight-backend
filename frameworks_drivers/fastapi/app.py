@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from sqlalchemy.exc import IntegrityError
 from pydantic_settings import BaseSettings
+from domain.exceptions.argument_error import ArgumentError
 from domain.exceptions.bad_request_error import BadRequestError
 from domain.exceptions.error_handler import ErrorHandler
 from domain.exceptions.not_found_error import NotFoundError
@@ -77,6 +78,10 @@ class App:
         @self.app.exception_handler(UnauthorizedError)
         def unauthorized_error(request: Request, exc: UnauthorizedError):
             return ErrorHandler.unauthorized_error_handler(request=request, exc=exc)
+        
+        @self.app.exception_handler(ArgumentError)
+        def argument_error(request: Request, exc: ArgumentError):
+            return ErrorHandler.argument_error_handler(request=request, exc=exc)
 
     @classmethod
     def get_app(cls, settings: BaseSettings) -> FastAPI:

@@ -1,6 +1,6 @@
 from fastapi.encoders import jsonable_encoder
 from dependency_injector.wiring import inject, Provide
-from fastapi import APIRouter, status, Depends, Body
+from fastapi import APIRouter, status, Depends, Body, Query
 
 from containers.container import Container
 from domain.entities.application_stage import ApplicationStage
@@ -47,7 +47,7 @@ def get_all_application_stage(
     return applications_stage_json
 
 
-@router.get("/application_stage/{application_stage_id}", status_code=status.HTTP_200_OK, response_model=ApplicationStageSchema)
+@router.get("/application_stage/id/{application_stage_id}", status_code=status.HTTP_200_OK, response_model=ApplicationStageSchema)
 @inject
 def get_application_stage_by_id(
     application_stage_id: int,
@@ -58,6 +58,40 @@ def get_application_stage_by_id(
     application_stage = application_stage_use_cases.get_application_stage_by_id(
         application_stage_id=application_stage_id
     )
+    application_stage_json = jsonable_encoder(application_stage)
+
+    return application_stage_json
+
+
+@router.get("/application_stage/search", status_code=status.HTTP_200_OK, response_model=list[ApplicationStageSchema])
+@inject
+def get_application_stage_by_name(
+    application_stage_data: str = Query(..., alias="application_stage"),
+    application_stage_use_cases: ApplicationStageUseCases = Depends(
+        Provide[Container.application_stage_use_cases]
+    )
+):
+    application_stage = application_stage_use_cases.get_application_stage_by_name(
+        application_stage=application_stage_data
+    )
+
+    application_stage_json = jsonable_encoder(application_stage)
+
+    return application_stage_json
+
+
+@router.get("/application_stage/name", status_code=status.HTTP_200_OK, response_model=ApplicationStageSchema)
+@inject
+def get_application_stage_by_name_exactly(
+    application_stage_data: str = Query(..., alias="application_stage"),
+    application_stage_use_cases: ApplicationStageUseCases = Depends(
+        Provide[Container.application_stage_use_cases]
+    )
+):
+    application_stage = application_stage_use_cases.get_application_stage_by_name_exactly(
+        application_stage=application_stage_data
+    )
+
     application_stage_json = jsonable_encoder(application_stage)
 
     return application_stage_json

@@ -9,15 +9,18 @@ from interface_adapters.api.dependencies.dependencies import login_required
 from use_cases.job_use_cases import JobUseCases
 
 
-router = APIRouter(
-    dependencies=[Depends(login_required)],
-    tags=["jobs"]
-)
+router = APIRouter(tags=["jobs"])
 
 
 @router.post("/job", status_code=status.HTTP_201_CREATED, response_model=JobSchema)
 @inject
-def create_job(job_data: JobSchemaCreate = Body(...), job_use_cases: JobUseCases = Depends(Provide[Container.job_use_cases])):
+def create_job(
+    job_data: JobSchemaCreate = Body(...), 
+    job_use_cases: JobUseCases = Depends(Provide[Container.job_use_cases]),
+    current_user: str = Depends(login_required)
+):
+    job_data.user_id = current_user.id
+    
     job_dict = job_data.model_dump()
     job = job_use_cases.create_job(
         job=Job(**job_dict)
@@ -30,8 +33,11 @@ def create_job(job_data: JobSchemaCreate = Body(...), job_use_cases: JobUseCases
 
 @router.get("/job", status_code=status.HTTP_200_OK, response_model=list[JobSchema])
 @inject
-def get_all_jobs(job_use_cases: JobUseCases = Depends(Provide[Container.job_use_cases])):
-    jobs = job_use_cases.get_all_jobs()
+def get_all_jobs(
+    job_use_cases: JobUseCases = Depends(Provide[Container.job_use_cases]),
+    current_user: str = Depends(login_required)
+):
+    jobs = job_use_cases.get_all_jobs(user_id=current_user.id)
 
     jobs_json = jsonable_encoder(jobs)
 
@@ -40,8 +46,11 @@ def get_all_jobs(job_use_cases: JobUseCases = Depends(Provide[Container.job_use_
 
 @router.get("/job/{job_id}", status_code=status.HTTP_200_OK, response_model=JobSchema)
 @inject
-def get_job_by_id(job_id: int, job_use_cases: JobUseCases = Depends(Provide[Container.job_use_cases])):
-    job = job_use_cases.get_job_by_id(job_id=job_id)
+def get_job_by_id(
+    job_id: int, job_use_cases: JobUseCases = Depends(Provide[Container.job_use_cases]),
+    current_user: str = Depends(login_required)
+):
+    job = job_use_cases.get_job_by_id(job_id=job_id, user_id=current_user.id)
 
     job_json = jsonable_encoder(job)
 
@@ -53,12 +62,18 @@ def get_job_by_id(job_id: int, job_use_cases: JobUseCases = Depends(Provide[Cont
 def update_job(
     job_id: int,
     job_data: JobSchemaUpdate = Body(...),
-    job_use_cases: JobUseCases = Depends(Provide[Container.job_use_cases])
+    job_use_cases: JobUseCases = Depends(Provide[Container.job_use_cases]),
+    current_user: str = Depends(login_required)
 ):
+    user_id = current_user.id
+
+    job_data.user_id = user_id
+    
     job_dict = job_data.model_dump(exclude_unset=True)
     job = job_use_cases.update_job(
         job_id=job_id, 
-        job=job_dict
+        job=job_dict,
+        user_id=user_id
     )
 
     job_json = jsonable_encoder(job)
@@ -70,8 +85,9 @@ def update_job(
 @inject
 def delete_job(
     job_id: int,
-    job_use_cases: JobUseCases = Depends(Provide[Container.job_use_cases])
+    job_use_cases: JobUseCases = Depends(Provide[Container.job_use_cases]),
+    current_user: str = Depends(login_required)
 ):
-    job_use_cases.delete_job(job_id=job_id)
+    job_use_cases.delete_job(job_id=job_id, user_id=current_user.id)
 
     return {"message": "Job deleted successfully"}

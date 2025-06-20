@@ -34,6 +34,7 @@ class Container(containers.DeclarativeContainer):
         "interface_adapters.api.interview_type_routes",
         "interface_adapters.api.interview_routes",
         "interface_adapters.api.auth_routes",
+        "interface_adapters.api.dependencies.dependencies"
     ])
 
     data_base_session = providers.Resource(get_db)
