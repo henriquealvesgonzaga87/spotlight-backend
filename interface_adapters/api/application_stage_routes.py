@@ -80,6 +80,23 @@ def get_application_stage_by_name(
     return application_stage_json
 
 
+@router.get("/application_stage/name", status_code=status.HTTP_200_OK, response_model=ApplicationStageSchema)
+@inject
+def get_application_stage_by_name_exactly(
+    application_stage_data: str = Query(..., alias="application_stage"),
+    application_stage_use_cases: ApplicationStageUseCases = Depends(
+        Provide[Container.application_stage_use_cases]
+    )
+):
+    application_stage = application_stage_use_cases.get_application_stage_by_name_exactly(
+        application_stage=application_stage_data
+    )
+
+    application_stage_json = jsonable_encoder(application_stage)
+
+    return application_stage_json
+
+
 @router.patch("/application_stage/{application_stage_id}", status_code=status.HTTP_200_OK, response_model=ApplicationStageSchema)
 @inject
 def update_application_state(
