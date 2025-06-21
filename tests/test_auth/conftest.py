@@ -51,10 +51,12 @@ def mock_auth_repository_success(
 
 @pytest.fixture
 def mock_redis_auth_repository_success(
-    mock_redis_auth_repository_interface
+    mock_redis_auth_repository_interface,
+    refresh_token
 ):
     redis_repo = mock_redis_auth_repository_interface
     redis_repo.revoke_refresh_token.return_value = True
+    redis_repo.is_refresh_token_revoked.return_value = refresh_token
 
     return redis_repo
 
@@ -71,6 +73,7 @@ def mock_auth_repository_failure(mock_session):
 def mock_redis_auth_repository_failure(mock_redis_client):
     redis_repo = RedisAuthRepository(redis_client=mock_redis_client)
     redis_repo.revoke_refresh_token = Mock(side_effect=Exception("error"))
+    redis_repo.is_refresh_token_revoked = Mock(side_effect=Exception("error"))
 
     return redis_repo
 
