@@ -4,9 +4,12 @@ from unittest.mock import Mock
 from sqlalchemy.orm import Session
 
 from domain.entities.user import User
+from domain.exceptions.bad_request_error import BadRequestError
 from domain.exceptions.not_found_error import NotFoundError
+from domain.exceptions.unauthorized_error import UnauthorizedError
 from domain.interfaces.auth_repository_interface import AuthRepositoryInterface
 from domain.interfaces.redis.auth_redis_repository_interface import AuthRedisRepositoryInterface
+from domain.schemas.auth_schema import LoginSchema, TokenSchema
 from interface_adapters.database.redis.auth_redis_repository import RedisAuthRepository
 from interface_adapters.database.redis.dependencies import RedisClient
 from interface_adapters.database.sqlalchemy.auth_repository import SQLAlchemyAuthRepository
@@ -62,6 +65,46 @@ def mock_redis_auth_repository_success(
 
 
 @pytest.fixture
+def mock_auth_use_cases_success(
+    mock_auth_repository_interface,
+    mock_redis_auth_repository_interface,
+    user,
+    access_token,
+    refresh_token,
+    token_response
+):
+    use_cases = AuthUseCases(
+        auth_repository=mock_auth_repository_interface,
+        auth_redis_repository=mock_redis_auth_repository_interface
+    )
+    use_cases._authenticate_user = Mock(return_value=user)
+    use_cases._create_access_token = Mock(return_value=access_token)
+    use_cases._create_refresh_token = Mock(return_value=refresh_token)
+    use_cases.login = Mock(return_value=token_response)
+    use_cases.refresh_token = Mock(return_value=token_response)
+
+    return use_cases
+
+
+@pytest.fixture
+def mock_auth_use_cases_failure(
+    mock_auth_repository_interface,
+    mock_redis_auth_repository_interface,
+):
+    use_cases = AuthUseCases(
+        auth_repository=mock_auth_repository_interface,
+        auth_redis_repository=mock_redis_auth_repository_interface
+    )
+    use_cases._authenticate_user = Mock(side_effect=UnauthorizedError("error"))
+    use_cases._create_access_token = Mock(side_effect=Exception("error"))
+    use_cases._create_refresh_token = Mock(side_effect=Exception("error"))
+    use_cases.login = Mock(side_effect=UnauthorizedError("error"))
+    use_cases.refresh_token = Mock(side_effect=BadRequestError("error"))
+
+    return use_cases
+
+
+@pytest.fixture
 def mock_auth_repository_failure(mock_session):
     repo = SQLAlchemyAuthRepository(session=mock_session)
     repo.get_user_by_email = Mock(side_effect=NotFoundError("error"))
@@ -91,6 +134,15 @@ def user():
 
 
 @pytest.fixture
+def token_response():
+    return TokenSchema(
+        access_token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJoZW5yaXF1ZUBtYWlsLmNvbSIsImV4cCI6MTc1MDUwMTc5OH0.VHCYCiRWHzHneN4Y-ToWfuNXc4ZPOqHxm46hyr36iuE",
+        refresh_token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJoZW5yaXF1ZUBtYWlsLmNvbSIsImV4cCI6MTc1MTEwNTY5OH0.C0yfkxhPvnDa9RPUwLg5FT7fYAPMhpd37bmdloa56I8",
+        token_type="bearer"
+    )
+
+
+@pytest.fixture
 def token_json_reposnse():
     return {
         "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJoZW5yaXF1ZUBtYWlsLmNvbSIsImV4cCI6MTc1MDUwMTc5OH0.VHCYCiRWHzHneN4Y-ToWfuNXc4ZPOqHxm46hyr36iuE",
@@ -100,5 +152,28 @@ def token_json_reposnse():
 
 
 @pytest.fixture
+def access_token():
+    return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJoZW5yaXF1ZUBtYWlsLmNvbSIsImV4cCI6MTc1MDUwMTc5OH0.VHCYCiRWHzHneN4Y-ToWfuNXc4ZPOqHxm46hyr36iuE"
+
+
+@pytest.fixture
 def refresh_token():
     return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJoZW5yaXF1ZUBtYWlsLmNvbSIsImV4cCI6MTc1MTEwNTY5OH0.C0yfkxhPvnDa9RPUwLg5FT7fYAPMhpd37bmdloa56I8"
+
+
+@pytest.fixture
+def login_data():
+    return LoginSchema(
+        email="test@mail.com",
+        password="Admin@123456"
+    )
+
+
+@pytest.fixture
+def create_access_token_data(login_data):
+    return {"sub": login_data.email}
+
+
+@pytest.fixture
+def create_refresh_token_data(login_data):
+    return {"sub": login_data.email}
