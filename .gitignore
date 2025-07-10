@@ -1,6 +1,7 @@
 .venv
 venv
 .env
+.env.test
 .vscode
 vscode
 __pycache__
@@ -8,3 +9,5 @@ app.db
 wiki.md
 alembic.md
 scripts.sql
+.mypy*
+.pytest*

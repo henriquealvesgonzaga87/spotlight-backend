@@ -108,10 +108,10 @@ class TestAuthUseCases:
     def test_refresh_token_success(
         self,
         mock_auth_use_cases_success,
-        refresh_token
+        refresh_token_str
     ):
         refreshed_token = mock_auth_use_cases_success.refresh_token(
-            refresh_token=refresh_token
+            refresh_token=refresh_token_str
         )
 
         assert refreshed_token is not None
@@ -120,16 +120,16 @@ class TestAuthUseCases:
     def test_refresh_token_failure(
         self,
         mock_auth_use_cases_failure,
-        refresh_token
+        refresh_token_str
     ):
         with pytest.raises(BadRequestError, match="error"):
             mock_auth_use_cases_failure.refresh_token(
-                refresh_token=refresh_token
+                refresh_token=refresh_token_str
             )
 
         mock_auth_use_cases_failure.refresh_token = Mock(side_effect=UnauthorizedError("error"))
 
         with pytest.raises(UnauthorizedError, match="error"):
             mock_auth_use_cases_failure.refresh_token(
-                refresh_token=refresh_token
+                refresh_token=refresh_token_str
             )
