@@ -13,7 +13,7 @@ class ApplicationStageRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def get_application_stage_by_id(self, application_stage_id: int):
+    async def get_application_stage_by_id(self, application_stage_id: int, user_id: int):
         pass
 
     @abstractmethod

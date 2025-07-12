@@ -48,7 +48,7 @@ def get_all_application_stage(
     return applications_stage_json
 
 
-@router.get("/application_stage/id/{application_stage_id}", status_code=status.HTTP_200_OK, response_model=ApplicationStageSchema)
+@router.get("/application_stage/{application_stage_id}", status_code=status.HTTP_200_OK, response_model=ApplicationStageSchema)
 @inject
 def get_application_stage_by_id(
     application_stage_id: int,
@@ -58,7 +58,8 @@ def get_application_stage_by_id(
     current_user: str = Depends(login_required),
 ):
     application_stage = application_stage_use_cases.get_application_stage_by_id(
-        application_stage_id=application_stage_id
+        application_stage_id=application_stage_id,
+        user_id=current_user.id
     )
     application_stage_json = jsonable_encoder(application_stage)
 

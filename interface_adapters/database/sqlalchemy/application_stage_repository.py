@@ -49,8 +49,12 @@ class SQLAlchemyApplicationStageRepository(ApplicationStageRepositoryInterface):
         
         return application_stage
     
-    def get_application_stage_by_id(self, application_stage_id: int):
-        application_stage = self.session.query(ApplicationStage).filter(ApplicationStage.id == application_stage_id).first()
+    def get_application_stage_by_id(self, application_stage_id: int, user_id: int):
+        application_stage = self.session.query(ApplicationStage)\
+            .join(ApplicationStage.job)\
+            .filter(Job.user_id == user_id)\
+            .filter(ApplicationStage.id == application_stage_id)\
+            .first()
 
         if application_stage is None:
             raise NotFoundError("Application stage not found with the given ID")

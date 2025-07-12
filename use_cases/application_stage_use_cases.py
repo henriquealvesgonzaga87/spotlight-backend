@@ -33,10 +33,12 @@ class ApplicationStageUseCases:
         self._validate_id(id=user_id)
         return self.application_stage_repository.get_all_application_stage(user_id=user_id)
     
-    def get_application_stage_by_id(self, application_stage_id: int):
+    def get_application_stage_by_id(self, application_stage_id: int, user_id: int):
         self._validate_id(id=application_stage_id)
+        self._validate_id(id=user_id)
         return self.application_stage_repository.get_application_stage_by_id(
-            application_stage_id=application_stage_id
+            application_stage_id=application_stage_id,
+            user_id=user_id
         )
     
     def get_application_stage_by_name(self, application_stage: str):
