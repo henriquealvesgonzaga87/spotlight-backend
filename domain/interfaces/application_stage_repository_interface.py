@@ -9,7 +9,7 @@ class ApplicationStageRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def get_all_application_stage(self):
+    async def get_all_application_stage(self, user_id: int):
         pass
 
     @abstractmethod

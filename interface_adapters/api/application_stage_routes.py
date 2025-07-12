@@ -10,7 +10,6 @@ from use_cases.application_stage_use_cases import ApplicationStageUseCases
 
 
 router = APIRouter(
-    dependencies=[Depends(login_required)],
     tags=["application_stage"]
 )
 
@@ -21,7 +20,8 @@ def create_application_stage(
     application_stage_data: ApplicationStageSchemaCreate = Body(...),
     application_stage_use_cases: ApplicationStageUseCases = Depends(
         Provide[Container.application_stage_use_cases]
-    )
+    ),
+    current_user: str = Depends(login_required),
 ):
     application_stage = application_stage_use_cases.create_application_stage(
         ApplicationStage(
@@ -39,9 +39,10 @@ def create_application_stage(
 def get_all_application_stage(
     application_stage_use_cases: ApplicationStageUseCases = Depends(
         Provide[Container.application_stage_use_cases]
-    )
+    ),
+    current_user: str = Depends(login_required),
 ):
-    applications_stage = application_stage_use_cases.get_all_application_stage()
+    applications_stage = application_stage_use_cases.get_all_application_stage(user_id=current_user.id)
     applications_stage_json = jsonable_encoder(applications_stage)
 
     return applications_stage_json
@@ -53,7 +54,8 @@ def get_application_stage_by_id(
     application_stage_id: int,
     application_stage_use_cases: ApplicationStageUseCases = Depends(
         Provide[Container.application_stage_use_cases]
-    )
+    ),
+    current_user: str = Depends(login_required),
 ):
     application_stage = application_stage_use_cases.get_application_stage_by_id(
         application_stage_id=application_stage_id
@@ -69,7 +71,8 @@ def get_application_stage_by_name(
     application_stage_data: str = Query(..., alias="application_stage"),
     application_stage_use_cases: ApplicationStageUseCases = Depends(
         Provide[Container.application_stage_use_cases]
-    )
+    ),
+    current_user: str = Depends(login_required),
 ):
     application_stage = application_stage_use_cases.get_application_stage_by_name(
         application_stage=application_stage_data
@@ -86,7 +89,8 @@ def get_application_stage_by_name_exactly(
     application_stage_data: str = Query(..., alias="application_stage"),
     application_stage_use_cases: ApplicationStageUseCases = Depends(
         Provide[Container.application_stage_use_cases]
-    )
+    ),
+    current_user: str = Depends(login_required),
 ):
     application_stage = application_stage_use_cases.get_application_stage_by_name_exactly(
         application_stage=application_stage_data
@@ -104,7 +108,8 @@ def update_application_state(
     application_stage_data: ApplicationStageSchemaCreate = Body(...),
     application_stage_use_cases: ApplicationStageUseCases = Depends(
         Provide[Container.application_stage_use_cases]
-    )
+    ),
+    current_user: str = Depends(login_required),
 ):
     application_stage = application_stage_use_cases.update_application_stage(
         application_stage_id=application_stage_id,
@@ -124,7 +129,8 @@ def delete_application_stage(
     application_stage_id: int,
     application_stage_use_cases: ApplicationStageUseCases = Depends(
         Provide[Container.application_stage_use_cases]
-    )
+    ),
+    current_user: str = Depends(login_required),
 ):
     application_stage = application_stage_use_cases.delete_application_stage(
         application_stage_id=application_stage_id
