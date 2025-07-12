@@ -77,12 +77,27 @@ class SQLAlchemyApplicationStageRepository(ApplicationStageRepositoryInterface):
         except SQLArgumentError:
             raise ArgumentError("something went wrong, please try again.")
         
-    def get_application_stage_by_name_exactly(self, application_stage: str):
-        query_application_stage = self.session.query(ApplicationStage).filter(
-            ApplicationStage.application_stage == application_stage.lower()
-        ).first()
+        finally:
+            self.session.close()
         
-        return query_application_stage
+    def get_application_stage_by_name_exactly(self, application_stage: str, user_id: int):
+        try:
+            query_application_stage = self.session.query(ApplicationStage)\
+                .join(ApplicationStage.job)\
+                .filter(Job.user_id == user_id)\
+                .filter(ApplicationStage.application_stage == application_stage.lower())\
+                .first()
+            
+            if query_application_stage is None:
+                raise NotFoundError("Not found with the given name")
+            
+            return query_application_stage
+        
+        except SQLArgumentError:
+            raise ArgumentError("something went wrong, please try again.")
+        
+        finally:
+            self.session.close()
     
     def update_application_stage(self, application_stage: ApplicationStage, application_stage_id: int):
         query_application_stage = self.get_application_stage_by_id(

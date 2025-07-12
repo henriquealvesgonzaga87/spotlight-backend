@@ -85,7 +85,7 @@ def get_application_stage_by_name(
     return application_stage_json
 
 
-@router.get("/application_stage/name", status_code=status.HTTP_200_OK, response_model=ApplicationStageSchema)
+@router.get("/application_stage/search/exact-name", status_code=status.HTTP_200_OK, response_model=ApplicationStageSchema)
 @inject
 def get_application_stage_by_name_exactly(
     application_stage_data: str = Query(..., alias="application_stage"),
@@ -95,7 +95,8 @@ def get_application_stage_by_name_exactly(
     current_user: str = Depends(login_required),
 ):
     application_stage = application_stage_use_cases.get_application_stage_by_name_exactly(
-        application_stage=application_stage_data
+        application_stage=application_stage_data,
+        user_id=current_user.id
     )
 
     application_stage_json = jsonable_encoder(application_stage)

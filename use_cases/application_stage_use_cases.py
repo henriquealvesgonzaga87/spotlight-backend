@@ -48,9 +48,11 @@ class ApplicationStageUseCases:
             user_id=user_id
         )
     
-    def get_application_stage_by_name_exactly(self, application_stage: str):
+    def get_application_stage_by_name_exactly(self, application_stage: str, user_id: int):
+        self._validate_id(id=user_id)
         return self.application_stage_repository.get_application_stage_by_name_exactly(
-            application_stage=application_stage
+            application_stage=application_stage,
+            user_id=user_id
         )
     
     def update_application_stage(self, application_stage: ApplicationStage, application_stage_id: int):

@@ -21,7 +21,7 @@ class ApplicationStageRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def get_application_stage_by_name_exactly(self, application_stage: str):
+    async def get_application_stage_by_name_exactly(self, application_stage: str, user_id: int):
         pass
 
     @abstractmethod
