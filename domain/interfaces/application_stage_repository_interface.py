@@ -29,5 +29,5 @@ class ApplicationStageRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def delete_application_stage(self, application_stage_id: int):
+    async def delete_application_stage(self, application_stage_id: int, user_id: int):
         pass

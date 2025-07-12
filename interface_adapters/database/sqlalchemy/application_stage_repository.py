@@ -127,10 +127,11 @@ class SQLAlchemyApplicationStageRepository(ApplicationStageRepositoryInterface):
         finally:
             self.session.close()
 
-    def delete_application_stage(self, application_stage_id: int):
+    def delete_application_stage(self, application_stage_id: int, user_id: int):
         try:
             query_application_stage = self.get_application_stage_by_id(
-                application_stage_id=application_stage_id
+                application_stage_id=application_stage_id,
+                user_id=user_id
             )
 
             self.session.delete(query_application_stage)

@@ -138,7 +138,8 @@ def delete_application_stage(
     current_user: str = Depends(login_required),
 ):
     application_stage = application_stage_use_cases.delete_application_stage(
-        application_stage_id=application_stage_id
+        application_stage_id=application_stage_id,
+        user_id=current_user.id
     )
 
     return {"message": f"{application_stage} deleted successfully"}
