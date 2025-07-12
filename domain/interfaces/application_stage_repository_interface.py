@@ -25,7 +25,7 @@ class ApplicationStageRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def update_application_stage(self, application_stage: ApplicationStage, application_stage_id: int):
+    async def update_application_stage(self, application_stage: ApplicationStage, application_stage_id: int, user_id: int):
         pass
 
     @abstractmethod

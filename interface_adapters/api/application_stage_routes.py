@@ -119,7 +119,8 @@ def update_application_state(
         application_stage_id=application_stage_id,
         application_stage=ApplicationStage(
             application_stage=application_stage_data.application_stage
-        )
+        ),
+        user_id=current_user.id
     )
 
     application_stage_json = jsonable_encoder(application_stage)

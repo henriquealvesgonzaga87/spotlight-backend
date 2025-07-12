@@ -7,6 +7,7 @@ from domain.entities.job import Job
 from domain.exceptions.argument_error import ArgumentError
 from domain.exceptions.integrity_error import IntegrityError
 from domain.exceptions.not_found_error import NotFoundError
+from domain.exceptions.unauthorized_error import UnauthorizedError
 from domain.interfaces.application_stage_repository_interface import ApplicationStageRepositoryInterface
 
 
@@ -103,9 +104,10 @@ class SQLAlchemyApplicationStageRepository(ApplicationStageRepositoryInterface):
         finally:
             self.session.close()
     
-    def update_application_stage(self, application_stage: ApplicationStage, application_stage_id: int):
+    def update_application_stage(self, application_stage: ApplicationStage, application_stage_id: int, user_id: int):
         query_application_stage = self.get_application_stage_by_id(
-            application_stage_id=application_stage_id
+            application_stage_id=application_stage_id,
+            user_id=user_id
         )
 
         try:
