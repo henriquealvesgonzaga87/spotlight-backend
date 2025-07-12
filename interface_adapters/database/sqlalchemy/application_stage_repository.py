@@ -61,10 +61,13 @@ class SQLAlchemyApplicationStageRepository(ApplicationStageRepositoryInterface):
         
         return application_stage
     
-    def get_application_stage_by_name(self, application_stage: str):
+    def get_application_stage_by_name(self, application_stage: str, user_id: int):
         try:
-            query_application_stage = self.session.query(ApplicationStage).filter(
-                ApplicationStage.application_stage.ilike(f"%{application_stage}%")).all()
+            query_application_stage = self.session.query(ApplicationStage)\
+                .join(ApplicationStage.job)\
+                .filter(Job.user_id == user_id)\
+                .filter(ApplicationStage.application_stage.ilike(f"%{application_stage}%"))\
+                .all()
             
             if len(query_application_stage) == 0:
                 raise NotFoundError("Not found with the given name")
