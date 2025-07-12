@@ -24,9 +24,10 @@ def create_application_stage(
     current_user: str = Depends(login_required),
 ):
     application_stage = application_stage_use_cases.create_application_stage(
-        ApplicationStage(
+        application_stage=ApplicationStage(
             application_stage=application_stage_data.application_stage,
-        )
+        ),
+        user_id=current_user.id
     )
 
     application_stage_json = jsonable_encoder(application_stage)

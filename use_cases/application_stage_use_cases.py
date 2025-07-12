@@ -22,11 +22,13 @@ class ApplicationStageUseCases:
         if not isinstance(id, int):
             raise BadRequestError("ID must be an Integer")
 
-    def create_application_stage(self, application_stage: ApplicationStage):
+    def create_application_stage(self, application_stage: ApplicationStage, user_id: int):
         self._validate_application_stage_data(string=application_stage.application_stage)
+        self._validate_id(id=user_id)
 
         return self.application_stage_repository.create_application_stage(
-            application_stage=application_stage
+            application_stage=application_stage,
+            user_id=user_id
         )
     
     def get_all_application_stage(self, user_id: int):

@@ -14,13 +14,17 @@ class SQLAlchemyApplicationStageRepository(ApplicationStageRepositoryInterface):
     def __init__(self, session: Session):
         self.session = session
 
-    def create_application_stage(self, application_stage: ApplicationStage):
+    def create_application_stage(self, application_stage: ApplicationStage, user_id: int):
         try:
             application_stage.application_stage = str(application_stage.application_stage).lower()
             application_stage.created_at = datetime.utcnow()
             application_stage.updated_at = None
 
-            query_application_stage = self.get_application_stage_by_name_exactly(application_stage=application_stage.application_stage)
+            query_application_stage = self.session.query(ApplicationStage)\
+                .join(ApplicationStage.job)\
+                .filter(Job.user_id == user_id)\
+                .filter(ApplicationStage.application_stage == application_stage.application_stage.lower())\
+                .first()
 
             if query_application_stage:
                 return query_application_stage
@@ -33,7 +37,7 @@ class SQLAlchemyApplicationStageRepository(ApplicationStageRepositoryInterface):
         
         except IntegrityError as e:
             self.session.rollback()
-            raise IntegrityError("UNIQUE constraint failed")
+            raise IntegrityError(f"UNIQUE constraint failed: {e}")
         
         finally:
             self.session.close()
