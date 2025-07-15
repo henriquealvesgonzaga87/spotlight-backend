@@ -10,7 +10,6 @@ from use_cases.interview_use_cases import InterviewUseCases
 
 
 router = APIRouter(
-    dependencies=[Depends(login_required)],
     tags=["interview"]
 )
 
@@ -19,13 +18,15 @@ router = APIRouter(
 @inject
 def create_interview(
     interview_data: InterviewSchemaCreate = Body(...),
-    interview_use_cases: InterviewUseCases = Depends(Provide[Container.interview_use_cases])
+    interview_use_cases: InterviewUseCases = Depends(Provide[Container.interview_use_cases]),
+    current_user: str = Depends(login_required)
 ):
     interview_dict = interview_data.model_dump()
     interview = interview_use_cases.create_interview(
         interview=Interview(
             **interview_dict
-        )
+        ),
+        user_id=current_user.id
     )
 
     interview_json = jsonable_encoder(interview)
@@ -36,7 +37,8 @@ def create_interview(
 @router.get("/interview", status_code=status.HTTP_200_OK, response_model=list[InterviewSchema])
 @inject
 def get_all_interview(
-    interview_use_cases: InterviewUseCases = Depends(Provide[Container.interview_use_cases])
+    interview_use_cases: InterviewUseCases = Depends(Provide[Container.interview_use_cases]),
+    current_user: str = Depends(login_required)
 ):
     interviews = interview_use_cases.get_all_interview()
 
@@ -49,7 +51,8 @@ def get_all_interview(
 @inject
 def get_interview_by_id(
     interview_id: int,
-    interview_use_cases: InterviewUseCases = Depends(Provide[Container.interview_use_cases])
+    interview_use_cases: InterviewUseCases = Depends(Provide[Container.interview_use_cases]),
+    current_user: str = Depends(login_required)
 ):
     interview = interview_use_cases.get_interview_by_id(
         interview_id=interview_id
@@ -65,7 +68,8 @@ def get_interview_by_id(
 def update_interview(
     interview_id: int,
     interview_data: InterviewSchemaUpdate = Body(...),
-    interview_use_cases: InterviewUseCases = Depends(Provide[Container.interview_use_cases])
+    interview_use_cases: InterviewUseCases = Depends(Provide[Container.interview_use_cases]),
+    current_user: str = Depends(login_required)
 ):
     interview_dict = interview_data.model_dump(exclude_unset=True)
     interview = interview_use_cases.update_interview(
@@ -82,7 +86,8 @@ def update_interview(
 @inject
 def delete_interview(
     interview_id: int,
-    interview_use_cases: InterviewUseCases = Depends(Provide[Container.interview_use_cases])
+    interview_use_cases: InterviewUseCases = Depends(Provide[Container.interview_use_cases]),
+    current_user: str = Depends(login_required)
 ):
     interview_use_cases.delete_interview(interview_id=interview_id)
 

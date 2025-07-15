@@ -14,8 +14,9 @@ class InterviewUseCases:
         if not isinstance(id, int):
             raise BadRequestError("ID must be an Integer")
 
-    def create_interview(self, interview: Interview):
-        return self.interview_repository.create_interview(interview=interview)
+    def create_interview(self, interview: Interview, user_id: int):
+        self._validate_id(id=user_id)
+        return self.interview_repository.create_interview(interview=interview, user_id=user_id)
     
     def get_all_interview(self):
         return self.interview_repository.get_all_interview()

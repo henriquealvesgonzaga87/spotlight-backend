@@ -5,7 +5,7 @@ from domain.entities.interview import Interview
 
 class InterviewRepositoryInterface(ABC):
     @abstractmethod
-    async def create_interview(self, interview: Interview):
+    async def create_interview(self, interview: Interview, user_id: int):
         pass
 
     @abstractmethod
