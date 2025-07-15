@@ -49,8 +49,12 @@ class SQLAlchemyInterviewRepository(InterviewRepositoryInterface):
         
         return query_interview
     
-    def get_interview_by_id(self, interview_id: int):
-        query_interview = self.session.query(Interview).filter(Interview.id == interview_id).first()
+    def get_interview_by_id(self, interview_id: int, user_id: int):
+        query_interview = self.session.query(Interview)\
+            .join(Interview.job)\
+            .filter(Job.user_id == user_id)\
+            .filter(Interview.id == interview_id)\
+            .first()
 
         if query_interview is None:
             raise NotFoundError("Not found with the given parameter")

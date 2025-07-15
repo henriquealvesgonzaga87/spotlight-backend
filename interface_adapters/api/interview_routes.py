@@ -55,7 +55,8 @@ def get_interview_by_id(
     current_user: str = Depends(login_required)
 ):
     interview = interview_use_cases.get_interview_by_id(
-        interview_id=interview_id
+        interview_id=interview_id,
+        user_id=current_user.id
     )
 
     interview_json = jsonable_encoder(interview)
