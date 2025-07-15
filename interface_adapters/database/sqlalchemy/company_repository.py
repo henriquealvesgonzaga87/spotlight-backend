@@ -47,12 +47,6 @@ class SQLAlchemyCompanyRepository(CompanyRepositoryInterface):
 
         return companies
     
-    # self.session.query(ApplicationStage)\
-    #             .join(ApplicationStage.job)\
-    #             .filter(Job.user_id == user_id)\
-    #             .filter(ApplicationStage.application_stage == application_stage.lower())\
-    #             .first()
-    
     def update_company(self, company_id: int, company: Company, user_id: int):
         query_company = self.session.query(Company)\
             .join(Company.job)\
@@ -83,11 +77,15 @@ class SQLAlchemyCompanyRepository(CompanyRepositoryInterface):
         finally:
             self.session.close()
 
-    def delete_company(self, company_id: int):
-        query_company = self.get_company_by_id(company_id=company_id)
+    def delete_company(self, company_id: int, user_id: int):
+        query_company = self.session.query(Company)\
+            .join(Company.job)\
+            .filter(Job.user_id == user_id)\
+            .filter(Company.id == company_id)\
+            .first()
 
         if query_company is None:
-            raise NotFoundError(message="There's no data to show")
+            raise NotFoundError(message="Company not found!")
         
         try:
             self.session.delete(query_company)

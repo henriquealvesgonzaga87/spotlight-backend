@@ -20,5 +20,5 @@ class CompanyRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def delete_company(self, company_id: int):
+    async def delete_company(self, company_id: int, user_id: int):
         pass

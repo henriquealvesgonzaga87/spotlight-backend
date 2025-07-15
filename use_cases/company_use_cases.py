@@ -40,7 +40,8 @@ class CompanyUseCases:
             user_id=user_id
         )
     
-    def delete_company(self, company_id: int):
+    def delete_company(self, company_id: int, user_id: int):
         self._validate_id(id=company_id)
+        self._validate_id(id=user_id)
 
-        return self.company_repository.delete_company(company_id=company_id)
+        return self.company_repository.delete_company(company_id=company_id, user_id=user_id)
