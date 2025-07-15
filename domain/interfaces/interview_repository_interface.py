@@ -21,5 +21,5 @@ class InterviewRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def delete_interview(self, interview_id: int):
+    async def delete_interview(self, interview_id: int, user_id: int):
         pass

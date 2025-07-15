@@ -91,6 +91,6 @@ def delete_interview(
     interview_use_cases: InterviewUseCases = Depends(Provide[Container.interview_use_cases]),
     current_user: str = Depends(login_required)
 ):
-    interview_use_cases.delete_interview(interview_id=interview_id)
+    interview_use_cases.delete_interview(interview_id=interview_id, user_id=current_user.id)
 
     return {"message": "interview deleted successfully"}

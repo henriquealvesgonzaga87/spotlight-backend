@@ -83,8 +83,8 @@ class SQLAlchemyInterviewRepository(InterviewRepositoryInterface):
         finally:
             self.session.close()
 
-    def delete_interview(self, interview_id: int):
-        query_interview = self.get_interview_by_id(interview_id=interview_id)
+    def delete_interview(self, interview_id: int, user_id: int):
+        query_interview = self.get_interview_by_id(interview_id=interview_id, user_id=user_id)
 
         try:
             self.session.delete(query_interview)

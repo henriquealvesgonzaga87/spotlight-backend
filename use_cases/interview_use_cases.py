@@ -36,6 +36,7 @@ class InterviewUseCases:
             user_id=user_id
         )
     
-    def delete_interview(self, interview_id: int):
+    def delete_interview(self, interview_id: int, user_id: int):
         self._validate_id(id=interview_id)
-        return self.interview_repository.delete_interview(interview_id=interview_id)
+        self._validate_id(id=user_id)
+        return self.interview_repository.delete_interview(interview_id=interview_id, user_id=user_id)
