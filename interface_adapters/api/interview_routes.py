@@ -40,7 +40,7 @@ def get_all_interview(
     interview_use_cases: InterviewUseCases = Depends(Provide[Container.interview_use_cases]),
     current_user: str = Depends(login_required)
 ):
-    interviews = interview_use_cases.get_all_interview()
+    interviews = interview_use_cases.get_all_interview(user_id=current_user.id)
 
     interviews_json = jsonable_encoder(interviews)
 

@@ -18,8 +18,9 @@ class InterviewUseCases:
         self._validate_id(id=user_id)
         return self.interview_repository.create_interview(interview=interview, user_id=user_id)
     
-    def get_all_interview(self):
-        return self.interview_repository.get_all_interview()
+    def get_all_interview(self, user_id: int):
+        self._validate_id(id=user_id)
+        return self.interview_repository.get_all_interview(user_id=user_id)
     
     def get_interview_by_id(self, interview_id: int):
         self._validate_id(id=interview_id)

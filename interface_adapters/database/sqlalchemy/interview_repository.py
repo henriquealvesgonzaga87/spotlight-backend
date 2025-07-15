@@ -38,8 +38,11 @@ class SQLAlchemyInterviewRepository(InterviewRepositoryInterface):
         finally:
             self.session.close()
 
-    def get_all_interview(self):
-        query_interview = self.session.query(Interview).all()
+    def get_all_interview(self, user_id: int):
+        query_interview = self.session.query(Interview)\
+            .join(Interview.job)\
+            .filter(Job.user_id == user_id)\
+            .all()
 
         if len(query_interview) == 0:
             raise NotFoundError("There is no data to show")
