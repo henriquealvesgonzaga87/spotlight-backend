@@ -61,8 +61,8 @@ class SQLAlchemyInterviewRepository(InterviewRepositoryInterface):
         
         return query_interview
     
-    def update_interview(self, interview_id: int, interview: dict):
-        query_interview = self.get_interview_by_id(interview_id=interview_id)
+    def update_interview(self, interview_id: int, interview: dict, user_id: int):
+        query_interview = self.get_interview_by_id(interview_id=interview_id, user_id=user_id)
 
         try:
             for key, value in interview.items():

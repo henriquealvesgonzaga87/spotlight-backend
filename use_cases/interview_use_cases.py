@@ -27,11 +27,13 @@ class InterviewUseCases:
         self._validate_id(id=user_id)
         return self.interview_repository.get_interview_by_id(interview_id=interview_id, user_id=user_id)
     
-    def update_interview(self, interview_id: int, interview: dict):
+    def update_interview(self, interview_id: int, interview: dict, user_id: int):
         self._validate_id(id=interview_id)
+        self._validate_id(id=user_id)
         return self.interview_repository.update_interview(
             interview_id=interview_id,
-            interview=interview
+            interview=interview,
+            user_id=user_id
         )
     
     def delete_interview(self, interview_id: int):

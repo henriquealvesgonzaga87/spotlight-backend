@@ -75,7 +75,8 @@ def update_interview(
     interview_dict = interview_data.model_dump(exclude_unset=True)
     interview = interview_use_cases.update_interview(
         interview_id=interview_id,
-        interview=interview_dict
+        interview=interview_dict,
+        user_id=current_user.id
     )
 
     interview_json = jsonable_encoder(interview)
