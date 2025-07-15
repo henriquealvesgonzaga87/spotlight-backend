@@ -10,14 +10,17 @@ from use_cases.company_use_cases import CompanyUseCases
 
 
 router = APIRouter(
-    dependencies=[Depends(login_required)],
     tags=["company"]
 )
 
 
 @router.post("/company", status_code=status.HTTP_201_CREATED, response_model=CompanySchema)
 @inject
-def create_company(company_data: CompanySchemaCreate = Body(...), company_use_cases: CompanyUseCases = Depends(Provide[Container.company_use_cases])):
+def create_company(
+    company_data: CompanySchemaCreate = Body(...), 
+    company_use_cases: CompanyUseCases = Depends(Provide[Container.company_use_cases]),
+    current_user: str = Depends(login_required)
+):
     company = company_use_cases.create_company(
         Company(
             name=company_data.name,
@@ -31,7 +34,11 @@ def create_company(company_data: CompanySchemaCreate = Body(...), company_use_ca
 
 @router.get("/company/{company_id}", status_code=status.HTTP_200_OK, response_model=CompanySchema)
 @inject
-def get_company_by_id(company_id: int, company_use_case: CompanyUseCases = Depends(Provide[Container.company_use_cases])):
+def get_company_by_id(
+    company_id: int, 
+    company_use_case: CompanyUseCases = Depends(Provide[Container.company_use_cases]),
+    current_user: str = Depends(login_required)
+):
     company = company_use_case.get_company_by_id(company_id=company_id)
     company_json = jsonable_encoder(obj=company)
 
@@ -40,7 +47,10 @@ def get_company_by_id(company_id: int, company_use_case: CompanyUseCases = Depen
 
 @router.get("/company", status_code=status.HTTP_200_OK, response_model=list[CompanySchema])
 @inject
-def get_all_companies(company_use_case: CompanyUseCases = Depends(Provide[Container.company_use_cases])):
+def get_all_companies(
+    company_use_case: CompanyUseCases = Depends(Provide[Container.company_use_cases]),
+    current_user: str = Depends(login_required)
+):
     companies = company_use_case.get_all_companies()
     companies_json = jsonable_encoder(obj=companies)
 
@@ -49,14 +59,22 @@ def get_all_companies(company_use_case: CompanyUseCases = Depends(Provide[Contai
 
 @router.patch("/company/{company_id}", status_code=status.HTTP_200_OK, response_model=CompanySchema)
 @inject
-def update_company(company_id: int, company_data: CompanySchemaUpdate = Body(...), company_use_cases: CompanyUseCases = Depends(Provide[Container.company_use_cases])):
+def update_company(
+    company_id: int, 
+    company_data: CompanySchemaUpdate = Body(...), 
+    company_use_cases: CompanyUseCases = Depends(Provide[Container.company_use_cases]),
+    current_user: str = Depends(login_required)
+
+):
     company = company_use_cases.update_company(
         company_id=company_id,
         company=Company(
             name=company_data.name,
             link=company_data.link,
-        )
+        ),
+        user_id=current_user.id
     )
+    
     company_json = jsonable_encoder(company)
 
     return company_json

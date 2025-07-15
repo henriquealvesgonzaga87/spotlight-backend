@@ -2,6 +2,7 @@ from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from domain.entities.company import Company
+from domain.entities.job import Job
 from domain.exceptions.integrity_error import IntegrityError
 from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.company_repository_interface import CompanyRepositoryInterface
@@ -46,8 +47,22 @@ class SQLAlchemyCompanyRepository(CompanyRepositoryInterface):
 
         return companies
     
-    def update_company(self, company_id: int, company: Company):
-        query_company = self.get_company_by_id(company_id=company_id)
+    # self.session.query(ApplicationStage)\
+    #             .join(ApplicationStage.job)\
+    #             .filter(Job.user_id == user_id)\
+    #             .filter(ApplicationStage.application_stage == application_stage.lower())\
+    #             .first()
+    
+    def update_company(self, company_id: int, company: Company, user_id: int):
+        query_company = self.session.query(Company)\
+            .join(Company.job)\
+            .filter(Job.user_id == user_id)\
+            .filter(Company.id == company_id)\
+            .first()
+        
+        if query_company is None:
+            raise NotFoundError("Company not found!")
+        
         try:
             if company.name is not None:
                 query_company.name = company.name

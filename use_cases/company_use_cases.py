@@ -7,12 +7,12 @@ class CompanyUseCases:
     def __init__(self, company_repository: CompanyRepositoryInterface):
         self.company_repository = company_repository
 
-    def _validate_company_id(self, company_id):
-        if type(company_id) != int:
-            raise BadRequestError("The given ID must be an integer")
+    def _validate_id(self, id: int):
+        if id < 0:
+            raise BadRequestError("ID must be a positive Integer")
         
-        if company_id is None:
-            raise BadRequestError("ID cannot be empty")
+        if not isinstance(id, int):
+            raise BadRequestError("ID must be an Integer")
         
     def _convert_url_to_string(self, url):
         url_to_string = url.unicode_string()
@@ -23,19 +23,24 @@ class CompanyUseCases:
         return self.company_repository.create_company(company=company)
     
     def get_company_by_id(self, company_id: int):
-        self._validate_company_id(company_id=company_id)
+        self._validate_id(id=company_id)
 
         return self.company_repository.get_company_by_id(company_id=company_id)
     
     def get_all_companies(self):
         return self.company_repository.get_all_companies()
     
-    def update_company(self, company_id: int, company: Company):
-        self._validate_company_id(company_id=company_id)
+    def update_company(self, company_id: int, company: Company, user_id: int):
+        self._validate_id(id=company_id)
+        self._validate_id(id=user_id)
 
-        return self.company_repository.update_company(company_id=company_id, company=company)
+        return self.company_repository.update_company(
+            company_id=company_id, 
+            company=company,
+            user_id=user_id
+        )
     
     def delete_company(self, company_id: int):
-        self._validate_company_id(company_id=company_id)
+        self._validate_id(id=company_id)
 
         return self.company_repository.delete_company(company_id=company_id)
