@@ -10,7 +10,6 @@ from use_cases.interview_type_use_cases import InterviewTypeUseCases
 
 
 router = APIRouter(
-    dependencies=[Depends(login_required)],
     tags=["interview_type"]
 )
 
@@ -19,7 +18,8 @@ router = APIRouter(
 @inject
 def create_interview_type(
     interview_type_data: InterviewTypeSchemaCreate = Body(...),
-    interview_type_use_cases: InterviewTypeUseCases = Depends(Provide[Container.interview_type_use_cases])
+    interview_type_use_cases: InterviewTypeUseCases = Depends(Provide[Container.interview_type_use_cases]),
+    current_user: str = Depends(login_required),
 ):
     interview_type_dict = interview_type_data.model_dump()
     interview_type = interview_type_use_cases.create_interview_type(
@@ -36,9 +36,10 @@ def create_interview_type(
 @router.get("/interview_type", status_code=status.HTTP_200_OK, response_model=list[InterviewTypeSchema])
 @inject
 def get_all_interview_type(
-    interview_type_use_cases: InterviewTypeUseCases = Depends(Provide[Container.interview_type_use_cases])
+    interview_type_use_cases: InterviewTypeUseCases = Depends(Provide[Container.interview_type_use_cases]),
+    current_user: str = Depends(login_required),
 ):
-    interview_type = interview_type_use_cases.get_all_interview_type()
+    interview_type = interview_type_use_cases.get_all_interview_type(user_id=current_user.id)
 
     interview_type_json = jsonable_encoder(interview_type)
 
@@ -49,7 +50,8 @@ def get_all_interview_type(
 @inject
 def get_interview_type_by_id(
     interview_type_id: int,
-    interview_type_use_cases: InterviewTypeUseCases = Depends(Provide[Container.interview_type_use_cases])
+    interview_type_use_cases: InterviewTypeUseCases = Depends(Provide[Container.interview_type_use_cases]),
+    current_user: str = Depends(login_required),
 ):
     interview_type = interview_type_use_cases.get_interview_type_by_id(interview_type_id=interview_type_id)
 
@@ -63,7 +65,8 @@ def get_interview_type_by_id(
 def update_interview_type(
     interview_type_id: int,
     interview_type_data: InterviewTypeSchemaCreate = Body(...),
-    interview_type_use_cases: InterviewTypeUseCases = Depends(Provide[Container.interview_type_use_cases])
+    interview_type_use_cases: InterviewTypeUseCases = Depends(Provide[Container.interview_type_use_cases]),
+    current_user: str = Depends(login_required),
 ):
     interview_type_dict = interview_type_data.model_dump()
     interview_type = interview_type_use_cases.update_interview_type(
@@ -82,7 +85,8 @@ def update_interview_type(
 @inject
 def delete_interview_type(
     interview_type_id: int,
-    interview_type_use_cases: InterviewTypeUseCases = Depends(Provide[Container.interview_type_use_cases])
+    interview_type_use_cases: InterviewTypeUseCases = Depends(Provide[Container.interview_type_use_cases]),
+    current_user: str = Depends(login_required),
 ):
     interview_type_use_cases.delete_interview_type(interview_type_id=interview_type_id)
 

@@ -2,7 +2,10 @@ from datetime import datetime
 
 from sqlalchemy.orm import Session
 
+from domain.entities.interview import Interview
 from domain.entities.interview_type import InterviewType
+from domain.entities.job import Job
+from domain.exceptions.argument_error import ArgumentError
 from domain.exceptions.integrity_error import IntegrityError
 from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.interview_type_repository_interface import InterviewTypeRepositoryInterface
@@ -29,13 +32,27 @@ class SQLAlchemyInterviewTypeRepository(InterviewTypeRepositoryInterface):
         finally:
             self.session.close()
 
-    def get_all_interview_type(self):
-        inteview_types = self.session.query(InterviewType).all()
+    def get_all_interview_type(self, user_id: int):
+        try:
+            inteview_types = self.session.query(InterviewType)\
+                .join(InterviewType.interview)\
+                .join(Interview.job)\
+                .filter(Job.user_id == user_id)\
+                .all()
 
-        if len(inteview_types) == 0:
-            raise NotFoundError("There are no data to show")
+            if len(inteview_types) == 0:
+                raise NotFoundError("There are no data to show")
+            
+            return inteview_types
         
-        return inteview_types
+        except IntegrityError as e:
+            raise IntegrityError(f"Something went wrong to get the data: {e}")
+        
+        except ArgumentError as e:
+            raise ArgumentError(f"!!!ERROR!!!: {e}")
+        
+        finally:
+            self.session.close()
     
     def get_interview_type_by_id(self, interview_type_id: int):
         interview_type = self.session.query(InterviewType).filter(InterviewType.id == interview_type_id).first()

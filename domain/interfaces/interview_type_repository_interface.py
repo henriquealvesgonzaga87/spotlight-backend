@@ -8,7 +8,7 @@ class InterviewTypeRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def get_all_interview_type(self):
+    async def get_all_interview_type(self, user_id: int):
         pass
 
     @abstractmethod
