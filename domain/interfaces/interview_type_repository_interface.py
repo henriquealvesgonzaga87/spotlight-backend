@@ -16,7 +16,7 @@ class InterviewTypeRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def update_interview_type(self, interview_type_id: int, interview_type: InterviewType):
+    async def update_interview_type(self, interview_type_id: int, interview_type: InterviewType, user_id: int):
         pass
 
     @abstractmethod

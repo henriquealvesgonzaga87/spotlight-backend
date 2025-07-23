@@ -77,8 +77,11 @@ class SQLAlchemyInterviewTypeRepository(InterviewTypeRepositoryInterface):
         finally:
             self.session.close()
     
-    def update_interview_type(self, interview_type_id: int, interview_type: InterviewType):
-        query_interview_type = self.get_interview_type_by_id(interview_type_id=interview_type_id)
+    def update_interview_type(self, interview_type_id: int, interview_type: InterviewType, user_id: int):
+        query_interview_type = self.get_interview_type_by_id(
+            interview_type_id=interview_type_id,
+            user_id=user_id
+        )
 
         try:
             query_interview_type.interview_type = interview_type.interview_type

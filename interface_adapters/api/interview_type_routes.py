@@ -76,7 +76,8 @@ def update_interview_type(
         interview_type_id=interview_type_id,
         interview_type=InterviewType(
             **interview_type_dict
-        )
+        ),
+        user_id=current_user.id
     )
 
     interview_type_json = jsonable_encoder(interview_type)
