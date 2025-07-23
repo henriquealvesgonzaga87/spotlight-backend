@@ -46,6 +46,10 @@ class InterviewTypeUseCases:
             user_id=user_id
         )
     
-    def delete_interview_type(self, interview_type_id: int):
+    def delete_interview_type(self, interview_type_id: int, user_id: int):
         self._validate_id(id=interview_type_id)
-        return self.interview_type_repository.delete_interview_type(interview_type_id=interview_type_id)
+        self._validate_id(id=user_id)
+        return self.interview_type_repository.delete_interview_type(
+            interview_type_id=interview_type_id,
+            user_id=user_id
+        )

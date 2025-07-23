@@ -100,10 +100,21 @@ class SQLAlchemyInterviewTypeRepository(InterviewTypeRepositoryInterface):
         finally:
             self.session.close()
 
-    def delete_interview_type(self, interview_type_id: int):
-        query_interview_type = self.get_interview_type_by_id(interview_type_id=interview_type_id)
+    def delete_interview_type(self, interview_type_id: int, user_id: int):
+        try:
+            query_interview_type = self.get_interview_type_by_id(
+                interview_type_id=interview_type_id,
+                user_id=user_id
+            )
 
-        self.session.delete(query_interview_type)
-        self.session.commit()
+            self.session.delete(query_interview_type)
+            self.session.commit()
 
-        return query_interview_type
+            return query_interview_type
+        
+        except IntegrityError:
+            self.session.rollback()
+            raise IntegrityError("Something went wrong while saving")
+        
+        finally:
+            self.session.close()
