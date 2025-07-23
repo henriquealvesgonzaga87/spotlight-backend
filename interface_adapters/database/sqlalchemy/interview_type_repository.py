@@ -54,13 +54,28 @@ class SQLAlchemyInterviewTypeRepository(InterviewTypeRepositoryInterface):
         finally:
             self.session.close()
     
-    def get_interview_type_by_id(self, interview_type_id: int):
-        interview_type = self.session.query(InterviewType).filter(InterviewType.id == interview_type_id).first()
+    def get_interview_type_by_id(self, interview_type_id: int, user_id: int):
+        try:
+            interview_type = self.session.query(InterviewType)\
+                .filter(InterviewType.id == interview_type_id)\
+                .join(InterviewType.interview)\
+                .join(Interview.job)\
+                .filter(Job.user_id == user_id)\
+                .first()
 
-        if interview_type is None:
-            raise NotFoundError("Not found with the given parameter")
+            if interview_type is None:
+                raise NotFoundError("Not found with the given parameter")
 
-        return interview_type
+            return interview_type
+        
+        except IntegrityError as e:
+            raise IntegrityError(f"Something went wrong to get the data: {e}")
+        
+        except ArgumentError as e:
+            raise ArgumentError(f"!!!ERROR!!!: {e}")
+        
+        finally:
+            self.session.close()
     
     def update_interview_type(self, interview_type_id: int, interview_type: InterviewType):
         query_interview_type = self.get_interview_type_by_id(interview_type_id=interview_type_id)

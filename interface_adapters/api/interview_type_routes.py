@@ -53,7 +53,10 @@ def get_interview_type_by_id(
     interview_type_use_cases: InterviewTypeUseCases = Depends(Provide[Container.interview_type_use_cases]),
     current_user: str = Depends(login_required),
 ):
-    interview_type = interview_type_use_cases.get_interview_type_by_id(interview_type_id=interview_type_id)
+    interview_type = interview_type_use_cases.get_interview_type_by_id(
+        interview_type_id=interview_type_id,
+        user_id=current_user.id
+    )
 
     interview_type_json = jsonable_encoder(interview_type)
 
