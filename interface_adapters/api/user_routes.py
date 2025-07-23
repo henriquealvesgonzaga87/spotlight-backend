@@ -2,6 +2,7 @@ import json
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends, status, Body
 from fastapi.encoders import jsonable_encoder
+from domain.exceptions.unauthorized_error import UnauthorizedError
 from interface_adapters.api.dependencies.dependencies import login_required
 from use_cases.user_use_cases import UserUseCases
 from containers.container import Container
@@ -32,9 +33,12 @@ def create_user(user_data: UserSchemaCreate = Body(...), user_use_cases: UserUse
 @inject
 def get_user_by_id(
     user_id: int,
-    current_user_email: str = Depends(login_required),
+    current_user: str = Depends(login_required),
     user_use_cases: UserUseCases = Depends(Provide[Container.user_use_cases])
 ):
+    if current_user.id != user_id:
+        raise UnauthorizedError("Operation not authorized!")
+    
     user = user_use_cases.get_user_by_id(user_id=user_id)
     user_json = jsonable_encoder(obj=user)
 
@@ -46,9 +50,12 @@ def get_user_by_id(
 def update_user(
     user_id: int, 
     user_data: UserSchemaUpdate = Body(...),
-    current_user_email: str = Depends(login_required),
+    current_user: str = Depends(login_required),
     user_use_cases: UserUseCases = Depends(Provide[Container.user_use_cases])
 ):
+    if current_user.id != user_id:
+        raise UnauthorizedError("Operation not authorized!")
+    
     user = user_use_cases.update_user(user_id=user_id, user=User(
         name = user_data.name,
         email=user_data.email,
@@ -63,9 +70,12 @@ def update_user(
 @inject
 def delete_user(
     user_id: int,
-    current_user_email: str = Depends(login_required),
+    current_user: str = Depends(login_required),
     user_use_cases: UserUseCases = Depends(Provide[Container.user_use_cases])
 ):
+    if current_user.id != user_id:
+        raise UnauthorizedError("Operation not authorized!")
+    
     response = user_use_cases.delete_user(user_id=user_id)
 
     return json.dumps(obj=response, indent=4)
