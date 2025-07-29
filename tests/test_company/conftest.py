@@ -1,6 +1,11 @@
+import os
 import pytest
+
+from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 from unittest.mock import Mock
+from datetime import datetime, timedelta
+from jose import jwt
 
 from domain.entities.company import Company
 from domain.exceptions.integrity_error import IntegrityError
@@ -9,6 +14,10 @@ from domain.interfaces.company_repository_interface import CompanyRepositoryInte
 from domain.schemas.company_schema import CompanySchemaCreate
 from interface_adapters.database.sqlalchemy.company_repository import SQLAlchemyCompanyRepository
 from use_cases.company_use_cases import CompanyUseCases
+from domain.schemas.auth_schema import LoginSchema
+
+
+load_dotenv(".env.test")
 
 
 @pytest.fixture

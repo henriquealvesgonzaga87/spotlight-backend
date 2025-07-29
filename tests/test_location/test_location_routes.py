@@ -20,8 +20,11 @@ class TestLocationRoutes:
         container.location_use_cases.override(mock_location_use_cases)
 
     @pytest.mark.asyncio
-    async def test_create_country_route_success(self):
-        response = client.post("/location/country")
+    async def test_create_country_route_success(
+        self,
+        headers
+    ):
+        response = client.post("/location/country", headers=headers)
 
         assert response.status_code == 201
         assert response.json() == "Countries created successfully"
@@ -34,10 +37,15 @@ class TestLocationRoutes:
         assert response.content.decode("utf-8") == "Not Found"
 
     @pytest.mark.asyncio
-    async def test_get_countries_route_success(self, mock_location_use_cases, countries):
+    async def test_get_countries_route_success(
+        self, 
+        mock_location_use_cases, 
+        countries,
+        headers
+    ):
         mock_location_use_cases.get_countries = Mock(return_value=countries)
 
-        response = client.get("/location/country")
+        response = client.get("/location/country", headers=headers)
 
         assert response.status_code == 200
         assert response.json() == [
@@ -54,10 +62,16 @@ class TestLocationRoutes:
         assert response.content.decode("utf-8") == "Not Found"
 
     @pytest.mark.asyncio
-    async def test_get_country_by_id_route_success(self, mock_location_use_cases, country, country_id=0):
+    async def test_get_country_by_id_route_success(
+        self, 
+        mock_location_use_cases, 
+        country,
+        headers,
+        country_id=0
+    ):
         mock_location_use_cases.get_country_by_id = Mock(return_value=country)
 
-        response = client.get(f"/location/country/{country_id}")
+        response = client.get(f"/location/country/{country_id}", headers=headers)
 
         assert response.status_code == 200
         assert response.json() == {'id': 0, 'common_name': 'Andorra', 'code': 'AD'}
@@ -70,10 +84,15 @@ class TestLocationRoutes:
         assert response.content.decode("utf-8") == "Not Found"
 
     @pytest.mark.asyncio
-    async def test_get_states_route_success(self, mock_location_use_cases, states):
+    async def test_get_states_route_success(
+        self, 
+        mock_location_use_cases, 
+        states,
+        headers
+    ):
         mock_location_use_cases.get_states = Mock(return_value=states)
 
-        response = client.get("/location/country/state/Andorra")
+        response = client.get("/location/country/state/Andorra", headers=headers)
 
         assert response.status_code == 200
         assert response.json() == [
@@ -90,10 +109,16 @@ class TestLocationRoutes:
         assert response.content.decode() == "Not Found"
 
     @pytest.mark.asyncio
-    async def test_get_state_by_id_route_success(self, mock_location_use_cases, state, state_id=0):
+    async def test_get_state_by_id_route_success(
+        self, 
+        mock_location_use_cases, 
+        state,
+        headers,
+        state_id=0
+    ):
         mock_location_use_cases.get_state_by_id = Mock(return_value=state)
 
-        response = client.get(f"/location/state/{state_id}")
+        response = client.get(f"/location/state/{state_id}", headers=headers)
 
         assert response.status_code == 200
         assert response.json() == {'id': 0, 'name': 'Escaldes-Engordany', 'code': '08', 'admin_code': 8, 'country_id': 1}
@@ -107,12 +132,18 @@ class TestLocationRoutes:
         assert response.content.decode() == "Not Found"
 
     @pytest.mark.asyncio
-    async def test_create_state_route_success(self, mock_location_use_cases, create_state_data, state):
+    async def test_create_state_route_success(
+        self, 
+        mock_location_use_cases, 
+        create_state_data, 
+        state,
+        headers,
+    ):
         mock_location_use_cases.create_state = Mock(return_value=state)
 
         state_data = create_state_data.model_dump()
 
-        response = client.post("/location/state/", json=state_data)
+        response = client.post("/location/state/", headers=headers, json=state_data)
 
         assert response.status_code == 201
         assert response.json() == {'id': 0, 'name': 'Escaldes-Engordany', 'code': '08', 'admin_code': 8, 'country_id': 1}
@@ -132,6 +163,7 @@ class TestLocationRoutes:
         mock_location_use_cases,
         create_city_data,
         city,
+        headers,
         country_name="Andorra",
         state_name="Escaldes-Engordany"
     ):
@@ -139,7 +171,7 @@ class TestLocationRoutes:
 
       city_data = create_city_data.model_dump()
 
-      response = client.post(f"/location/city/{country_name}/{state_name}", json=city_data)
+      response = client.post(f"/location/city/{country_name}/{state_name}", headers=headers, json=city_data)
 
       assert response.status_code == 201
       assert response.json() == {'id': 0, 'name': 'Les Escaldes', 'state_id': 1}
@@ -163,12 +195,13 @@ class TestLocationRoutes:
         self,
         mock_location_use_cases,
         cities,
+        headers,
         country_name="Andorra",
         state_name="Escaldes-Engordany"
     ):
         mock_location_use_cases.get_cities = Mock(return_value=cities)
 
-        response = client.get(f"/location/city/{country_name}/{state_name}")
+        response = client.get(f"/location/city/{country_name}/{state_name}", headers=headers)
 
         assert response.status_code == 200
         assert response.json() == [
@@ -193,11 +226,12 @@ class TestLocationRoutes:
         self,
         mock_location_use_cases,
         city,
+        headers,
         city_id=0
     ):
         mock_location_use_cases.get_city_by_id = Mock(return_value=city)
 
-        response = client.get(f"/location/city/{city_id}")
+        response = client.get(f"/location/city/{city_id}", headers=headers)
 
         assert response.status_code == 200
         assert response.json() == {'id': 0, 'name': 'Les Escaldes', 'state_id': 1}

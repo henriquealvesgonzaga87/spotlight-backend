@@ -20,13 +20,20 @@ class TestCompanyRoutes:
         container.company_use_cases.override(mock_company_use_cases)
         
     @pytest.mark.asyncio
-    async def test_route_create_company_success(self, company_created, create_company_data, mock_company_use_cases):
+    async def test_route_create_company_success(
+        self, 
+        company_created, 
+        create_company_data, 
+        mock_company_use_cases,
+        headers,
+    ):
+        
         mock_company_use_cases.create_company = Mock(return_value=company_created)
 
         create_company_data.link = str(create_company_data.link)
         company_data = create_company_data.model_dump()
 
-        response = client.post("/company", json=company_data)
+        response = client.post("/company", headers=headers, json=company_data)
 
         assert response.status_code == 201
         assert response.json() == {
@@ -47,10 +54,17 @@ class TestCompanyRoutes:
             client.post("/company", json=company_data)
 
     @pytest.mark.asyncio
-    async def test_route_get_company_by_id_success(self, mock_company_use_cases, company_created, company_id=0):
+    async def test_route_get_company_by_id_success(
+        self, 
+        mock_company_use_cases, 
+        company_created,
+        headers,
+        company_id=0
+    ):
+        
         mock_company_use_cases.get_company_by_id = Mock(return_value=company_created)
 
-        response = client.get(f'/company/{company_id}')
+        response = client.get(f'/company/{company_id}', headers=headers)
 
         assert response.status_code == 200
         assert response.json() == {
@@ -68,10 +82,16 @@ class TestCompanyRoutes:
             client.get(f"company/{company_id}")
 
     @pytest.mark.asyncio
-    async def test_route_get_all_companies_success(self, mock_company_use_cases, companies):
+    async def test_route_get_all_companies_success(
+        self, 
+        mock_company_use_cases, 
+        companies,
+        headers,
+    ):
+        
         mock_company_use_cases.get_all_companies = Mock(return_value=companies)
 
-        response = client.get("/company")
+        response = client.get("/company", headers=headers)
 
         assert response.status_code == 200
         assert isinstance(response.json(), list)
@@ -106,13 +126,20 @@ class TestCompanyRoutes:
             client.get("/company")
 
     @pytest.mark.asyncio
-    async def test_route_update_company_success(self, mock_company_use_cases, company_updated, update_company_data, company_id=0):
+    async def test_route_update_company_success(
+        self, 
+        mock_company_use_cases, 
+        company_updated, 
+        update_company_data,
+        headers,
+        company_id=0
+    ):
         mock_company_use_cases.update_company = Mock(return_value=company_updated)
 
         update_company_data.link = str(update_company_data.link)
         company_data = update_company_data.model_dump()
 
-        response = client.patch(f"/company/{company_id}", json=company_data)
+        response = client.patch(f"/company/{company_id}", headers=headers, json=company_data)
 
         assert response.status_code == 200
         assert response.json() == {
@@ -130,12 +157,18 @@ class TestCompanyRoutes:
             client.patch(f"/company/{company_id}", json=update_company_data)
 
     @pytest.mark.asyncio
-    async def test_route_delete_company_success(self, mock_company_use_cases, company_created, company_id=0):
+    async def test_route_delete_company_success(
+        self, 
+        mock_company_use_cases, 
+        company_created,
+        headers,
+        company_id=0
+    ):
         mock_company_use_cases.delete_company = Mock(return_value=company_created)
         
         mock_company_use_cases.delete_company(company_id=company_id)
 
-        response = client.delete(f"/company/{company_id}")
+        response = client.delete(f"/company/{company_id}", headers=headers)
 
         assert response.status_code == 204
 

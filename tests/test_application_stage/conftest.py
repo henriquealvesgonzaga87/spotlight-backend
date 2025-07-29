@@ -1,15 +1,23 @@
+import os
 import pytest
 
+from dotenv import load_dotenv
 from unittest.mock import Mock
 from sqlalchemy.orm import Session
+from datetime import datetime, timedelta
+from jose import jwt
 
 from domain.entities.application_stage import ApplicationStage
 from domain.exceptions.integrity_error import IntegrityError
 from domain.exceptions.not_found_error import NotFoundError
 from domain.interfaces.application_stage_repository_interface import ApplicationStageRepositoryInterface
 from domain.schemas.application_stage_schema import ApplicationStageSchemaCreate
+from domain.schemas.auth_schema import LoginSchema
 from interface_adapters.database.sqlalchemy.application_stage_repository import SQLAlchemyApplicationStageRepository
 from use_cases.application_stage_use_cases import ApplicationStageUseCases
+
+
+load_dotenv(".env.test")
 
 
 @pytest.fixture

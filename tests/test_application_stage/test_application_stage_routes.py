@@ -28,13 +28,14 @@ class TestApplicationStageRoutes:
         mock_application_stage_use_cases,
         create_application_stage_data,
         application_stage_created,
-        application_stage_json
+        application_stage_json,
+        headers,
     ):
         mock_application_stage_use_cases.create_application_stage = Mock(return_value=application_stage_created)
 
         application_stage_data = create_application_stage_data.model_dump()
 
-        response = client.post("/application_stage", json=application_stage_data)
+        response = client.post("/application_stage", headers=headers, json=application_stage_data)
 
         assert response.status_code == 201
         assert response.json() == application_stage_json
@@ -56,11 +57,12 @@ class TestApplicationStageRoutes:
         self,
         mock_application_stage_use_cases,
         applications_stage,
-        applications_stage_json
+        applications_stage_json,
+        headers,
     ):
         mock_application_stage_use_cases.get_all_application_stage = Mock(return_value=applications_stage)
 
-        response = client.get("/application_stage")
+        response = client.get("/application_stage", headers=headers)
 
         assert response.status_code == 200
         assert response.json() == applications_stage_json
@@ -79,11 +81,12 @@ class TestApplicationStageRoutes:
         mock_application_stage_use_cases,
         application_stage_created,
         application_stage_json,
+        headers,
         application_stage_id=1,
     ):
         mock_application_stage_use_cases.get_application_stage_by_id = Mock(return_value=application_stage_created)
 
-        response = client.get(f"/application_stage/{application_stage_id}")
+        response = client.get(f"/application_stage/{application_stage_id}", headers=headers)
 
         assert response.status_code == 200
         assert response.json() == application_stage_json
@@ -105,13 +108,14 @@ class TestApplicationStageRoutes:
         update_application_stage_data,
         application_stage_updated,
         updated_application_stage_json,
+        headers,
         application_stage_id=1
     ):
         mock_application_stage_use_cases.update_application_stage = Mock(return_value=application_stage_updated)
 
         application_stage_data = update_application_stage_data.model_dump()
 
-        response = client.patch(f"/application_stage/{application_stage_id}", json=application_stage_data)
+        response = client.patch(f"/application_stage/{application_stage_id}", headers=headers, json=application_stage_data)
 
         assert response.status_code == 200
         assert response.json() == updated_application_stage_json
@@ -133,11 +137,12 @@ class TestApplicationStageRoutes:
     async def test_delete_application_stage_route_success(
         self,
         mock_application_stage_use_cases,
+        headers,
         application_stage_id=1
     ):
         mock_application_stage_use_cases.delete_application_stage = Mock(return_value="Deleted successfully")
 
-        response = client.delete(f"/application_stage/{application_stage_id}")
+        response = client.delete(f"/application_stage/{application_stage_id}", headers=headers)
 
         assert response.status_code == 204
         assert response.content.decode() == ''

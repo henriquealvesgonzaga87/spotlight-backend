@@ -47,10 +47,16 @@ class TestUserRoutes:
             client.post("/user", json=user_data)
 
     @pytest.mark.asyncio
-    async def test_route_get_user_by_id_success(self, mock_user_use_cases, user_created, user_id=0):
+    async def test_route_get_user_by_id_success(
+        self, 
+        mock_user_use_cases, 
+        user_created,
+        headers,
+        user_id=1
+    ):
         mock_user_use_cases.get_user_by_id = Mock(return_value=user_created)
 
-        response = client.get(f'/user/{user_id}')
+        response = client.get(f'/user/{user_id}', headers=headers)
 
         assert response.status_code == 200
         assert response.json() == {
@@ -69,12 +75,19 @@ class TestUserRoutes:
             client.get(f'/user/{user_id}')
 
     @pytest.mark.asyncio
-    async def test_update_user_success(self, mock_user_use_cases, user_updated, update_user_data, user_id=0):
+    async def test_update_user_success(
+        self, 
+        mock_user_use_cases, 
+        user_updated, 
+        update_user_data,
+        headers,
+        user_id=1
+    ):
         mock_user_use_cases.update_user = Mock(return_value=user_updated)
 
         user_data = update_user_data.model_dump()
 
-        response = client.patch(f'/user/{user_id}', json=user_data)
+        response = client.patch(f'/user/{user_id}', headers=headers, json=user_data)
 
         assert response.status_code == 200
         assert response.json() == {
@@ -96,11 +109,16 @@ class TestUserRoutes:
             client.put(f"/user/{user_id}", json=user_data)
 
     @pytest.mark.asyncio
-    async def test_delete_user_success(self, mock_user_use_cases, user_id=0):
+    async def test_delete_user_success(
+        self, 
+        mock_user_use_cases,
+        headers,
+        user_id=1
+    ):
         mock_user_use_cases.delete_user.return_value = {"Message": "User deleted"}
         mock_user_use_cases.delete_user(user_id=user_id)
 
-        response = client.delete(f'/user/{user_id}')
+        response = client.delete(f'/user/{user_id}', headers=headers)
 
         assert response.status_code == 204
 

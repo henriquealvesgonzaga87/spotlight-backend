@@ -28,7 +28,8 @@ class TestInterviewRoutes:
         mock_interview_use_cases,
         create_interview_data,
         interview_created,
-        create_interview_json_response
+        create_interview_json_response,
+        headers,
     ):
         mock_interview_use_cases.create_interview = Mock(return_value=interview_created)
 
@@ -36,7 +37,7 @@ class TestInterviewRoutes:
 
         interview_data = create_interview_data.model_dump()
 
-        response = client.post("/interview", json=interview_data)
+        response = client.post("/interview", headers=headers, json=interview_data)
 
         assert response.status_code == 201
         assert response.json() == create_interview_json_response
@@ -59,11 +60,12 @@ class TestInterviewRoutes:
         self,
         interviews,
         mock_interview_use_cases,
-        get_all_interviews_json_response
+        get_all_interviews_json_response,
+        headers,
     ):
         mock_interview_use_cases.get_all_interview = Mock(return_value=interviews)
 
-        response = client.get("/interview")
+        response = client.get("/interview", headers=headers)
 
         assert response.status_code == 200
         assert response.json() == get_all_interviews_json_response
@@ -82,11 +84,12 @@ class TestInterviewRoutes:
         mock_interview_use_cases,
         interview_created,
         create_interview_json_response,
+        headers,
         interview_id=1
     ):
         mock_interview_use_cases.get_interview_by_id = Mock(return_value= interview_created)
 
-        response = client.get(f"/interview/{interview_id}")
+        response = client.get(f"/interview/{interview_id}", headers=headers)
 
         assert response.status_code == 200
         assert response.json()["id"] == interview_id
@@ -108,6 +111,7 @@ class TestInterviewRoutes:
         interview_updated,
         update_interview_data,
         update_interview_json_response,
+        headers,
         interview_id=1
     ):
         mock_interview_use_cases.update_interview = Mock(return_value=interview_updated)
@@ -116,7 +120,7 @@ class TestInterviewRoutes:
 
         interview_data = update_interview_data.model_dump()
 
-        response = client.patch(f"/interview/{interview_id}", json=interview_data)
+        response = client.patch(f"/interview/{interview_id}", headers=headers, json=interview_data)
 
         assert response.status_code == 200
         assert response.json() == update_interview_json_response
@@ -140,11 +144,12 @@ class TestInterviewRoutes:
     async def test_delete_interview_route_success(
         self,
         mock_interview_use_cases,
+        headers,
         interview_id=1
     ):
         mock_interview_use_cases.delete_interview = Mock(return_value=True)
 
-        response = client.delete(f"/interview/{interview_id}")
+        response = client.delete(f"/interview/{interview_id}", headers=headers)
 
         assert response.status_code == 204
 

@@ -24,7 +24,8 @@ class TestJobRoutes:
         mock_job_use_cases,
         create_job_data,
         job_created,
-        job_json_create
+        job_json_create,
+        headers,
     ):
         mock_job_use_cases.create_job = Mock(return_value=job_created)
 
@@ -32,7 +33,7 @@ class TestJobRoutes:
 
         job_data = create_job_data.model_dump()
 
-        response = client.post("/job", json=job_data)
+        response = client.post("/job", headers=headers, json=job_data)
 
         assert response.status_code == 201
         assert response.json() == job_json_create
@@ -59,11 +60,12 @@ class TestJobRoutes:
         self,
         mock_job_use_cases,
         jobs,
-        jobs_json_response
+        jobs_json_response,
+        headers,
     ):
         mock_job_use_cases.get_all_jobs = Mock(return_value=jobs)
 
-        response = client.get("/job")
+        response = client.get("/job", headers=headers)
 
         assert response.status_code == 200
         assert response.json() == jobs_json_response
@@ -80,11 +82,12 @@ class TestJobRoutes:
         mock_job_use_cases,
         job_created,
         job_json_create,
+        headers,
         job_id=1
     ):
         mock_job_use_cases.get_job_by_id = Mock(return_value=job_created)
 
-        response = client.get(f"/job/{job_id}")
+        response = client.get(f"/job/{job_id}", headers=headers)
 
         assert response.status_code == 200
         assert response.json() == job_json_create
@@ -106,6 +109,7 @@ class TestJobRoutes:
         update_job_data,
         job_updated,
         job_json_update,
+        headers,
         job_id=1
     ):
         mock_job_use_cases.update_job = Mock(return_value=job_updated)
@@ -114,7 +118,7 @@ class TestJobRoutes:
 
         job_data = update_job_data.model_dump()
 
-        response = client.patch(f"/job/{job_id}", json=job_data)
+        response = client.patch(f"/job/{job_id}", headers=headers, json=job_data)
 
         assert response.status_code == 200
         assert response.json() == job_json_update
@@ -137,9 +141,10 @@ class TestJobRoutes:
     @pytest.mark.asyncio
     async def test_delete_job_route_success(
         self,
+        headers,
         job_id=1
     ):
-        response = client.delete(f"/job/{job_id}")
+        response = client.delete(f"/job/{job_id}", headers=headers)
 
         assert response.status_code == 204
 
