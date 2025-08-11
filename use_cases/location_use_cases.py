@@ -1,10 +1,8 @@
-import os
-
 from dotenv import load_dotenv
 
 from domain.entities.location import City, State
-from domain.exceptions.bad_request_error import BadRequestError
 from domain.interfaces.location_repository_interface import LocationRepositoryInterface
+from utils.utils import verify_id
 
 
 load_dotenv()
@@ -13,13 +11,6 @@ load_dotenv()
 class LocationUseCases:
     def __init__(self, location_repository: LocationRepositoryInterface):
         self.location_repository = location_repository
-
-    def _validate_id(self, id: int):
-        if type(id) != int:
-            raise BadRequestError("Country ID must be an integer")
-        
-        if id < 0:
-            raise BadRequestError("Country ID must be a positive integer")
         
     def _validate_location_name_for_url(self, name: str):
         chars_to_replace = ["-", "%", "&"]
@@ -37,7 +28,7 @@ class LocationUseCases:
         return self.location_repository.get_countries()
     
     def get_country_by_id(self, country_id: int):
-        self._validate_id(id=country_id)
+        verify_id(id_value=country_id)
         return self.location_repository.get_country_by_id(country_id=country_id)
     
     def get_states(self, country_name: str):
@@ -48,7 +39,7 @@ class LocationUseCases:
         return self.location_repository.get_states(country_name=country_name)
     
     def get_state_by_id(self, state_id: int):
-        self._validate_id(id=state_id)
+        verify_id(id_value=state_id)
         return self.location_repository.get_state_by_id(state_id=state_id)
         
     def create_state(self, state: State):
@@ -67,5 +58,5 @@ class LocationUseCases:
         return self.location_repository.get_cities(country_name=correct_country_name, state_name=correct_state_name)
     
     def get_city_by_id(self, city_id: int):
-        self._validate_id(id=city_id)
+        verify_id(id_value=city_id)
         return self.location_repository.get_city_by_id(city_id=city_id)

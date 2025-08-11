@@ -3,18 +3,12 @@ import re
 from domain.exceptions.bad_request_error import BadRequestError
 from domain.interfaces.user_repository_interface import UserRepositoryInterface
 from domain.entities.user import User
+from utils.utils import verify_id
 
 
 class UserUseCases:
     def __init__(self, user_repository: UserRepositoryInterface):
         self.user_repository = user_repository
-
-    def _validate_user_id(self, user_id):
-        if type(user_id) != int:
-            raise BadRequestError("The given ID must be an integer")
-        
-        if user_id is None:
-            raise BadRequestError("ID cannot be empty")
         
     def _validate_user_data(self, user: User):
         regex_name = r"^[A-Z][a-zA-Z]{2,}$"
@@ -36,18 +30,18 @@ class UserUseCases:
         return self.user_repository.create_user(user=user)
     
     def get_user_by_id(self, user_id: int) -> User:
-        self._validate_user_id(user_id=user_id)
+        verify_id(id_value=user_id)
         
         return self.user_repository.get_user_by_id(
             user_id=user_id
         )
     
     def update_user(self, user_id: int, user: User):
-        self._validate_user_id(user_id=user_id)
+        verify_id(id_value=user_id)
 
         return self.user_repository.update_user(user_id=user_id, user=user)
     
     def delete_user(self, user_id: int):
-        self._validate_user_id(user_id=user_id)
+        verify_id(id_value=user_id)
 
         return self.user_repository.delete_user(user_id=user_id)
